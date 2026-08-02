@@ -1,0 +1,9 @@
+FPS Rig AKM by J-Toastie
+Source: https://poly.pizza/m/U6l6wjxFhC
+Bundle: https://poly.pizza/bundle/FPS-pack-QKgLgzmIZ2
+License: Creative Commons Attribution 3.0 (CC BY 3.0)
+License URL: https://creativecommons.org/licenses/by/3.0/
+
+The runtime AKM view model retains attribution to the original author. Project-side
+code adds virtual marker nodes and recolors the sleeve material without modifying the
+distributed animated GLB.

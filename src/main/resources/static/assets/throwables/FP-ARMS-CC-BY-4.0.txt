@@ -1,0 +1,8 @@
+Asset: FP arms
+Author: DJMaesen
+Source: https://sketchfab.com/3d-models/fp-arms-06ee1407117d4e5ab343becb4ee44bb6
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License URL: https://creativecommons.org/licenses/by/4.0/
+
+The production GLB was cleaned and animated for this project. The original
+The asset was modified and integrated for this project.

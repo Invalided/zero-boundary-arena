@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>&#38646;&#30028;&#25112;&#22330; &middot; PROJECT ZERO</title>
+        <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="loading.css">
+  <link rel="stylesheet" href="combat.css">
+  <link rel="stylesheet" href="loadout.css">
+  <link rel="stylesheet" href="settings.css">
+  <link rel="preload" href="assets/loading/arena-night.webp" as="image" type="image/webp">
+  <style>.map-choice{display:block;margin:12px 0 6px;text-align:left;color:#8fa9be;font-size:12px}#mapSelect{width:100%;padding:11px 12px;border:1px solid #294f68;border-radius:6px;background:#050b18;color:#e6f7ff}#buffHint{position:fixed;left:26px;bottom:138px;padding:6px 10px;border-left:2px solid #ffbe55;background:#071827cc;color:#ffd37b;font-size:12px}.pending-entry #menu,.pending-entry #mapSelection{display:none!important}.pending-entry #loadingScreen{display:grid!important}</style>
+  <script>try{if(sessionStorage.getItem('zeroPendingEntryMode'))document.documentElement.classList.add('pending-entry')}catch{}</script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="loadingScreen" class="loading-screen hidden" aria-live="polite">
+    <div class="loading-content">
+      <div class="loading-brand">PROJECT <span>ZERO</span></div>
+      <div id="loadingMapName" class="loading-map-name">竞技场</div>
+      <p id="loadingMapDescription" class="loading-map-description">正在部署作战区域</p>
+      <strong id="loadingStage">正在准备竞技场</strong>
+      <div class="loading-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <i id="loadingProgress"></i>
+      </div>
+      <small id="loadingPercent">0%</small>
+    </div>
+  </div>
+
+  <div id="menu" class="overlay zero-entry">
+    <div class="entry-brand" aria-label="&#38646;&#30028;&#25112;&#22330;">
+      <div class="zero-mark">Z</div><div><strong>PROJECT ZERO</strong><small>COMBAT SIMULATION SYSTEM</small></div>
+    </div>
+    <button id="menuSettings" class="icon-button entry-settings" type="button" aria-label="&#25171;&#24320;&#35774;&#32622;">&#9881;</button>
+    <aside class="entry-status"><small>SYSTEM STATUS</small><strong id="publicStatusState">ONLINE</strong><span id="publicOnline">-- ONLINE &middot; -- IN BATTLE</span></aside>
+    <aside class="entry-briefing" aria-label="作战简报">
+      <small>OPERATION BOARD</small>
+      <strong>SEASON // 00</strong>
+      <span>ARENA POOL <b>02</b></span>
+      <span>LIVE PROTOCOL <b>FFA</b></span>
+      <span>LOADOUT STATUS <b>READY</b></span>
+    </aside>
+    <aside class="entry-bulletin"><small>COMBAT BRIEF</small><p>自由竞技协议已上线<br>能源中转站与夜幕竞技场轮换开放</p></aside>
+    <div class="entry-coordinates" aria-hidden="true">34° 12' 08'' N<br>118° 19' 41'' E<br><i></i> SECTOR ZERO</div>
+    <footer class="entry-copyright"><span>PROJECT ZERO // ZERO BATTLEFIELD</span><small>&copy; 2026 PROJECT ZERO. ALL RIGHTS RESERVED.</small></footer>
+    <div class="card entry-terminal">
+      <div class="logo">PROJECT <span>ZERO</span></div>
+      <h1>&#38646;&#30028;&#25112;&#22330;</h1>
+      <p>&#36793;&#30028;&#21327;&#35758; &middot; &#22810;&#20154;&#22312;&#32447;&#25112;&#26415;&#31454;&#25216;</p>
+      <label class="terminal-label" for="name">&#25112;&#26007;&#32456;&#31471;&#30331;&#24405; <small>// TERMINAL LOGIN</small></label>
+      <input id="name" maxlength="12" placeholder="&#36755;&#20837;&#20320;&#30340;&#26165;&#31216;">
+      <label class="map-choice hidden" for="mapSelect">&#22320;&#22270;</label>
+      <select id="mapSelect" class="hidden" aria-label="&#36873;&#25321;&#22320;&#22270;"></select>
+      <div id="qualityControl" class="segmented" aria-label="&#30011;&#36136;">
+        <button type="button" data-quality="low">&#20302;</button>
+        <button type="button" data-quality="medium">&#20013;</button>
+        <button type="button" data-quality="high">&#39640;</button>
+      </div>
+      <div class="entry-actions">
+        <button id="play">&#36827;&#20837;&#25112;&#26007;</button>
+        <button id="spectate" type="button">&#35266;&#25112;&#27169;&#24335;</button>
+      </div>
+      <div class="tips">WASD &#31227;&#21160; &middot; &#31354;&#26684;&#36339;&#36291; &middot; &#40736;&#26631;&#30696;&#20934;/&#23556;&#20987; &middot; R &#25442;&#24377;<br>1 &#20027;&#27494;&#22120; &middot; 2 &#21103;&#27494;&#22120; &middot; 4 &#25237;&#25527;&#29289; &middot; T &#35774;&#32622; &middot; Tab &#35745;&#20998;&#26495;</div>
+      <b id="status">&#27491;&#22312;&#36830;&#25509;&#26381;&#21153;&#22120;...</b>
+      <small id="clientVersion" class="client-version">CLIENT BUILD v--</small>
+    </div>
+  </div>
+
+  <div id="mapSelection" class="map-selection hidden" role="dialog" aria-modal="true" aria-labelledby="mapSelectionTitle">
+    <section>
+      <header><small>COMBAT ZONE SELECT</small><h2 id="mapSelectionTitle">&#36873;&#25321;&#20316;&#25112;&#21306;&#22495;</h2><p>&#27599;&#24352;&#22320;&#22270;&#25317;&#26377;&#29420;&#31435;&#21160;&#32447;&#12289;&#20809;&#29031;&#19982;&#20132;&#25112;&#33410;&#22863;</p></header>
+      <div id="mapCards" class="map-cards"></div>
+      <button id="mapSelectionBack" class="map-selection-back" type="button">&#36820;&#22238;&#32456;&#31471;</button>
+    </section>
+  </div>
+
+  <div id="buffSelection" class="buff-selection hidden" role="dialog" aria-modal="false" aria-labelledby="buffSelectionTitle">
+    <section>
+      <header><small>SPAWN PROTOCOL</small><strong id="buffSelectionTitle">选择本次增益</strong><span id="buffCountdown">10.0s</span></header>
+      <div class="buff-timer" aria-hidden="true"><i id="buffCountdownProgress"></i></div>
+      <div class="buff-cards">
+        <button class="buff-jam" type="button" data-buff="NO_AMMO"><kbd>1</kbd><i>×</i><b>没有子弹</b><span>干扰攻击者弹匣</span><small>武器干扰</small></button>
+        <button class="buff-deflect" type="button" data-buff="LEFT_TRAJECTORY"><kbd>2</kbd><i>↙</i><b>弹道偏左</b><span>偏转来袭弹道</span><small>弹道防御</small></button>
+        <button class="buff-assault" type="button" data-buff="FEARLESS"><kbd>3</kbd><i>»</i><b>无所畏惧</b><span>移动速度 +25%</span><small>机动强化</small></button>
+      </div>
+      <button class="buff-skip" type="button" data-buff="NONE"><kbd>0</kbd> 跳过本次选择</button>
+    </section>
+  </div>
+
+  <div id="roundStart" class="round-start hidden" aria-live="polite"><small>ROUND LIVE</small><strong>比赛开始</strong></div>
+
+  <div id="spectatorHud" class="hidden">
+    <div class="spectator-status"><small>OBSERVER</small><strong id="spectatorTarget">自由视角</strong></div>
+    <div class="spectator-actions">
+      <button id="spectatorPrevious" class="icon-button" type="button" title="上一个玩家" aria-label="上一个玩家">‹</button>
+      <button id="spectatorMode" class="icon-button" type="button" title="切换自由或跟随视角" aria-label="切换自由或跟随视角">◎</button>
+      <button id="spectatorNext" class="icon-button" type="button" title="下一个玩家" aria-label="下一个玩家">›</button>
+      <button id="spectatorSettings" class="icon-button" type="button" title="设置" aria-label="打开设置">⚙</button>
+      <button id="spectatorExit" class="icon-button" type="button" title="退出观战" aria-label="退出观战">×</button>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div id="matchHud"><small id="matchPhase">等待玩家</small><strong id="matchTimer">--:--</strong><span id="matchGoal">FFA</span></div>
+    <div class="telemetry-cluster" aria-label="网络与性能状态">
+      <div id="networkStatus" class="network-status"><i></i><span>-- ms</span></div>
+      <div id="devStats" class="dev-stats">SYNC --<br>FPS -- · P99 --</div>
+    </div>
+    <div id="crosshair"><i class="ch top"></i><i class="ch bottom"></i><i class="ch left"></i><i class="ch right"></i><i class="ch dot"></i></div>
+    <div id="scope" class="hidden"><div class="scopeLens"></div><div class="scopeCircle"></div><i class="scopeH"></i><i class="scopeV"></i><i class="scopeDot"></i><i class="scopeTick tickN"></i><i class="scopeTick tickS"></i><i class="scopeTick tickE"></i><i class="scopeTick tickW"></i></div>
+    <div class="vitals">
+      <div class="label">❤️ <span id="hpText">100</span></div>
+      <div class="bar"><i id="hp"></i></div>
+      <div class="label">🛡️ <span id="armorText">50</span></div>
+      <div class="bar armor"><i id="armor"></i></div>
+    </div>
+    <div class="weapon" aria-label="当前装备栏">
+      <div class="current-weapon">
+        <img id="currentWeaponIcon" src="assets/ui/weapons/m4a1.png" alt="M4A1">
+        <div class="current-weapon-copy"><small id="currentSlotLabel">PRIMARY · 1</small><b id="weaponName">M4A1</b></div>
+        <strong><span id="ammo">30</span><i>/</i><span id="reserveAmmo">∞</span></strong>
+      </div>
+      <div id="weaponSlots" class="weapon-slots">
+        <div class="weapon-slot active" data-slot="PRIMARY"><kbd>1</kbd><img id="primarySlotIcon" src="assets/ui/weapons/m4a1.png" alt=""><span id="primarySlotName">M4A1</span></div>
+        <div class="weapon-slot empty" data-slot="SECONDARY"><kbd>2</kbd><img id="secondarySlotIcon" alt=""><span id="secondarySlotName">未装备</span></div>
+        <div class="weapon-slot empty" data-slot="MELEE"><kbd>3</kbd><span class="empty-slot-icon">—</span><span id="meleeSlotName">近战空槽</span></div>
+        <div class="weapon-slot throwable" data-slot="THROWABLE"><kbd>4</kbd><img src="assets/ui/weapons/frag_grenade.png" alt=""><span id="grenadeCount">破片手雷 ×1</span></div>
+      </div>
+      <div id="reload"></div>
+      <div id="weaponActionHint" class="hidden"><span>拉栓</span><i></i></div>
+    </div>
+    <div id="feed"></div>
+    <div id="hit">✕</div>
+    <div id="damageNumbers"></div>
+    <div id="damageDirection" class="hidden" aria-hidden="true"><i></i></div>
+    <div id="flashEffect" class="flash-effect hidden" aria-hidden="true"></div>
+    <div id="smokeVeil" class="smoke-veil" aria-hidden="true"></div>
+    <div id="pickupHint" class="hidden">🔭 已拾取狙击枪，按 2 装备</div>
+    <div id="pickupRespawnHint" class="hidden"></div>
+    <div id="protectHint" class="hidden">🛡️ 出生保护</div>
+    <div id="buffHint" class="hidden"></div>
+    <div id="buffTrigger" class="hidden" aria-live="polite"><i></i><span></span></div>
+    <div id="weaponStateHint" class="hidden"></div>
+    <div id="killConfirm" class="hidden" aria-live="polite"><small>击杀确认</small><strong></strong><span></span></div>
+    <button id="settingsButton" class="icon-button hud-settings" type="button" aria-label="打开设置">⚙</button>
+  </div>
+
+  <div id="matchResult" class="match-result hidden" role="dialog" aria-modal="true" aria-labelledby="matchResultTitle">
+    <section class="match-result-panel">
+      <small id="matchResultReason">本局结束</small>
+      <h2 id="matchResultTitle">比赛结算</h2>
+      <div id="matchStandings"></div>
+      <p id="matchNextRound">下一局准备中</p>
+    </section>
+  </div>
+
+  <div id="settingsPanel" class="settings-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <section class="settings-card">
+      <header><h2 id="settingsTitle">设置</h2><button id="settingsClose" class="icon-button" type="button" aria-label="关闭设置">×</button></header>
+      <div class="settings-section"><h3>音乐</h3><label class="check-row"><input id="musicEnabled" type="checkbox"><span>音乐</span></label><label class="range-row"><span>音量</span><input id="musicVolume" type="range" min="0" max="1" step="0.01"><output id="musicVolumeValue"></output></label></div>
+      <div class="settings-section"><h3>音效</h3><label class="check-row"><input id="sfxEnabled" type="checkbox"><span>音效</span></label><label class="range-row"><span>音量</span><input id="sfxVolume" type="range" min="0" max="1" step="0.01"><output id="sfxVolumeValue"></output></label></div>
+      <div class="settings-section"><h3>操作</h3><label class="range-row"><span>鼠标灵敏度</span><input id="mouseSensitivity" type="range" min="0.1" max="3" step="0.05"><output id="mouseSensitivityValue"></output></label><label class="range-row"><span>开镜倍率</span><input id="scopeSensitivity" type="range" min="0.1" max="2" step="0.05"><output id="scopeSensitivityValue"></output></label><label class="select-row"><span>狙击开火</span><select id="settingsSniperAimMode"><option value="AIM_THEN_FIRE">右键开镜，左键开火</option><option value="AIM_RELEASE">松开右键开火</option></select></label></div>
+      <div class="settings-section"><h3>单人训练</h3><label class="select-row"><span>机器人难度</span><select id="settingsBotDifficulty"><option value="OFF">关闭</option><option value="EASY">简单</option><option value="HARD">困难</option><option value="INFERNO">炼狱</option></select></label><small class="settings-note">仅房间内只有一名真人时生效；真人对局不会读取个人难度。</small></div>
+      <footer class="settings-actions"><button id="settingsResume" type="button">返回战斗</button><button id="quitGame" class="danger" type="button">退出游戏</button></footer>
+    </section>
+  </div>
+
+  <div id="board" class="panel hidden">
+    <h2>🏆 实时排行榜</h2>
+    <div id="scores"></div>
+    <small>按住 Tab 查看</small>
+  </div>
+
+  <div id="chat">
+    <div id="messages"></div>
+    <input id="chatInput" class="hidden" maxlength="100" placeholder="输入消息，Enter 发送">
+  </div>
+
+  <div id="death" class="overlay death-overlay hidden">
+    <div class="card">
+      <small>COMBAT REPORT</small>
+      <h1>你阵亡了</h1>
+      <div class="death-report"><strong id="deathKiller">未知攻击者</strong><span id="deathWeapon">等待服务端结果</span></div>
+      <p id="respawnCountdown">3 秒后自动重生</p>
+      <button id="respawn" disabled>自动重生中...</button>
+    </div>
+  </div>
+
+  <script src="lib/three.min.js"></script>
+  <script src="lib/GLTFLoader.js"></script>
+  <script src="lib/map-runtime.js"></script>
+  <script src="lib/map-visual-runtime.js"></script>
+  <script src="lib/weapon-layout-runtime.js"></script>
+  <script src="lib/weapon-preview-runtime.js"></script>
+  <script src="lib/weapon-skin-runtime.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

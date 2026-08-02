@@ -1,0 +1,51 @@
+{
+  "contractVersion": 1,
+  "defaultsByWeaponId": {
+    "0ba5663e-db51-4c13-a58f-99c1c93c9550": "4fd1342d-38d7-43aa-a359-69efa825c99b",
+    "1822765d-3952-4ade-b3f0-3e25dfb1bdc2": "055f8b21-3728-444b-a6f8-2e000f383103",
+    "21ed05cf-8e36-4ccb-b23f-1caa6ae38e70": "f9f1cd75-3677-45f4-a4ca-949f50df5012",
+    "8c0c437f-a7a4-4894-b126-fa2ffc82205c": "838611bb-cbc1-475f-9dc8-f2bb7af43815"
+  },
+  "skins": {
+    "4fd1342d-38d7-43aa-a359-69efa825c99b": {
+      "identity": {"id": "4fd1342d-38d7-43aa-a359-69efa825c99b", "code": "m4a1.default", "displayName": "M4A1 标准型"},
+      "compatibility": {"weaponIds": ["0ba5663e-db51-4c13-a58f-99c1c93c9550"], "familyCodes": ["m4a1"]},
+      "rarity": "COMMON"
+    },
+    "055f8b21-3728-444b-a6f8-2e000f383103": {
+      "identity": {"id": "055f8b21-3728-444b-a6f8-2e000f383103", "code": "ak47.default", "displayName": "AK47 标准型"},
+      "compatibility": {"weaponIds": ["1822765d-3952-4ade-b3f0-3e25dfb1bdc2"], "familyCodes": ["ak47"]},
+      "rarity": "COMMON"
+    },
+    "f9f1cd75-3677-45f4-a4ca-949f50df5012": {
+      "identity": {"id": "f9f1cd75-3677-45f4-a4ca-949f50df5012", "code": "awm.default", "displayName": "AWM 标准型"},
+      "compatibility": {"weaponIds": ["21ed05cf-8e36-4ccb-b23f-1caa6ae38e70"], "familyCodes": ["awm"]},
+      "rarity": "COMMON"
+    },
+    "838611bb-cbc1-475f-9dc8-f2bb7af43815": {
+      "identity": {"id": "838611bb-cbc1-475f-9dc8-f2bb7af43815", "code": "glock.default", "displayName": "Glock 标准型"},
+      "compatibility": {"weaponIds": ["8c0c437f-a7a4-4894-b126-fa2ffc82205c"], "familyCodes": ["glock"]},
+      "rarity": "COMMON"
+    },
+    "a185a7c1-f7c4-414f-841b-59be27ac26d5": {
+      "identity": {"id": "a185a7c1-f7c4-414f-841b-59be27ac26d5", "code": "ak47.ember-test", "displayName": "AK47 赤焰试作"},
+      "compatibility": {"weaponIds": [], "familyCodes": ["ak47"]},
+      "rarity": "RARE",
+      "materials": [
+        {"material": "Wood", "color": 7673108, "roughness": 0.48, "metalness": 0.08},
+        {"material": "DarkWood", "color": 3217696, "roughness": 0.58, "metalness": 0.04}
+      ],
+      "muzzle": {
+        "profile": "RIFLE_AK",
+        "overrides": {
+          "coreColor": 16773328,
+          "outerColors": [16753920, 13762560],
+          "lightColor": 16744192,
+          "durationMs": 62,
+          "sparkCount": 6,
+          "smokeCount": 3
+        }
+      }
+    }
+  }
+}

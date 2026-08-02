@@ -1,0 +1,1973 @@
+{
+  "schemaVersion": 2,
+  "id": "zero-polygon-arena",
+  "revision": 17,
+  "units": "meter",
+  "environment": {
+    "theme": "energy_relay_station_day",
+    "groundPrefab": "arena/floor-panels-v1",
+    "sky": "day-clear",
+    "atmosphere": {
+      "backgroundColor": "#729db4",
+      "fogColor": "#8ba8b2",
+      "fogNear": 58,
+      "fogFar": 155,
+      "ambientSkyColor": "#c5dce2",
+      "ambientGroundColor": "#4f5b50",
+      "ambientIntensity": 0.85,
+      "mainLightColor": "#ffe7ad",
+      "mainLightIntensity": 1.25,
+      "mainLightPosition": [
+        -38,
+        55,
+        -24
+      ],
+      "celestialColor": "#fff2bd",
+      "celestialPosition": [
+        -52,
+        66,
+        -88
+      ],
+      "celestialRadius": 5.2,
+      "stars": false,
+      "exposure": 0.94
+    },
+    "surfacePalette": {
+      "concrete": "#6d7476",
+      "metal": "#29363d",
+      "wood": "#665744",
+      "ramp": "#505b60",
+      "guide": "#e7b94a"
+    },
+    "boundaryWall": {
+      "height": 3.6,
+      "thickness": 0.7,
+      "color": "#29363d",
+      "roughness": 0.78,
+      "metalness": 0.1,
+      "accentColor": "#e1b84b",
+      "accentHeight": 3.08,
+      "concreteSegments": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "concreteColor": "#72777a",
+      "reinforcementColor": "#273238"
+    },
+    "ground": {
+      "baseColor": "#41494c",
+      "seamColor": "#272f32",
+      "speckleColor": "#6b7477",
+      "panelMeters": 5,
+      "roughness": 0.84,
+      "metalness": 0.05
+    },
+    "floorZones": [
+      {
+        "id": "relay-core",
+        "center": [
+          0,
+          0
+        ],
+        "size": [
+          28,
+          28
+        ],
+        "color": "#454f53",
+        "seamColor": "#293438",
+        "accentColor": "#52d8ee",
+        "label": "RELAY CORE",
+        "labelPosition": [
+          0,
+          -13
+        ],
+        "rotationY": 0,
+        "roughness": 0.76,
+        "metalness": 0.1
+      },
+      {
+        "id": "maintenance-west",
+        "center": [
+          -27,
+          0
+        ],
+        "size": [
+          20,
+          36
+        ],
+        "color": "#304a54",
+        "seamColor": "#20343b",
+        "accentColor": "#52d8ee",
+        "label": "MAINTENANCE",
+        "labelPosition": [
+          -27,
+          16
+        ],
+        "rotationY": 1.570796,
+        "roughness": 0.82,
+        "metalness": 0.06
+      },
+      {
+        "id": "capacitor-east",
+        "center": [
+          27,
+          0
+        ],
+        "size": [
+          20,
+          36
+        ],
+        "color": "#5e503e",
+        "seamColor": "#3e3428",
+        "accentColor": "#ff8a32",
+        "label": "CAPACITOR",
+        "labelPosition": [
+          27,
+          16
+        ],
+        "rotationY": 1.570796,
+        "roughness": 0.78,
+        "metalness": 0.08
+      },
+      {
+        "id": "relay-north",
+        "center": [
+          0,
+          34
+        ],
+        "size": [
+          28,
+          12
+        ],
+        "color": "#59666d",
+        "seamColor": "#35434a",
+        "accentColor": "#9fc8ff",
+        "label": "RELAY ARRAY",
+        "labelPosition": [
+          0,
+          39
+        ],
+        "rotationY": 0,
+        "roughness": 0.8,
+        "metalness": 0.08
+      },
+      {
+        "id": "transit-south",
+        "center": [
+          0,
+          -34
+        ],
+        "size": [
+          28,
+          12
+        ],
+        "color": "#5d5438",
+        "seamColor": "#403923",
+        "accentColor": "#ffc14a",
+        "label": "TRANSIT",
+        "labelPosition": [
+          0,
+          -39
+        ],
+        "rotationY": 0,
+        "roughness": 0.76,
+        "metalness": 0.1
+      }
+    ],
+    "floorDecals": [
+      {
+        "id": "route-west",
+        "type": "ROUTE_ARROW",
+        "center": [
+          -17,
+          0
+        ],
+        "size": [
+          5,
+          1.2
+        ],
+        "color": "#52d8ee",
+        "rotationY": 0,
+        "opacity": 0.56
+      },
+      {
+        "id": "route-east",
+        "type": "ROUTE_ARROW",
+        "center": [
+          17,
+          0
+        ],
+        "size": [
+          5,
+          1.2
+        ],
+        "color": "#ef9d3f",
+        "rotationY": 3.141593,
+        "opacity": 0.56
+      },
+      {
+        "id": "route-north",
+        "type": "ROUTE_ARROW",
+        "center": [
+          0,
+          18
+        ],
+        "size": [
+          5,
+          1.2
+        ],
+        "color": "#d5e6e9",
+        "rotationY": 1.570796,
+        "opacity": 0.5
+      },
+      {
+        "id": "route-south",
+        "type": "ROUTE_ARROW",
+        "center": [
+          0,
+          -18
+        ],
+        "size": [
+          5,
+          1.2
+        ],
+        "color": "#ef9d3f",
+        "rotationY": -1.570796,
+        "opacity": 0.52
+      },
+      {
+        "id": "warning-north",
+        "type": "WARNING_STRIPES",
+        "center": [
+          0,
+          27
+        ],
+        "size": [
+          10,
+          0.7
+        ],
+        "color": "#e5bd4d",
+        "rotationY": 0,
+        "opacity": 0.55
+      },
+      {
+        "id": "warning-south",
+        "type": "WARNING_STRIPES",
+        "center": [
+          0,
+          -27
+        ],
+        "size": [
+          10,
+          0.7
+        ],
+        "color": "#ef9d3f",
+        "rotationY": 0,
+        "opacity": 0.55
+      }
+    ],
+    "wallSigns": [
+      {
+        "id": "south-grid-sign",
+        "edgeIndex": 0,
+        "code": "RLY-7C",
+        "title": "HELIOS RELAY",
+        "subtitle": "THE GRID REMEMBERS",
+        "color": "#ffc14a",
+        "width": 8.6,
+        "height": 1.55,
+        "verticalOffset": 1.82
+      },
+      {
+        "id": "east-capacitor-sign",
+        "edgeIndex": 3,
+        "code": "CAP-K19",
+        "title": "ARC RESERVE",
+        "subtitle": "CHARGE WINDOW: RESTRICTED",
+        "color": "#ff7a32",
+        "width": 8.6,
+        "height": 1.55,
+        "verticalOffset": 1.82
+      },
+      {
+        "id": "north-relay-sign",
+        "edgeIndex": 6,
+        "code": "NODE-4B",
+        "title": "RELAY CONTROL",
+        "subtitle": "KEEP THE SIGNAL AWAKE",
+        "color": "#70a9ff",
+        "width": 8.6,
+        "height": 1.55,
+        "verticalOffset": 1.82
+      },
+      {
+        "id": "west-service-sign",
+        "edgeIndex": 9,
+        "code": "MNT-X3",
+        "title": "SERVICE SECTOR",
+        "subtitle": "CREW STATUS: UNVERIFIED",
+        "color": "#43d8e8",
+        "width": 8.6,
+        "height": 1.55,
+        "verticalOffset": 1.82
+      }
+    ],
+    "lights": [
+      {
+        "id": "poly-core",
+        "position": [
+          0,
+          8,
+          0
+        ],
+        "color": "#85e9f7",
+        "intensity": 0.72,
+        "distance": 26
+      },
+      {
+        "id": "poly-north",
+        "position": [
+          0,
+          7,
+          31
+        ],
+        "color": "#dcecf0",
+        "intensity": 0.34,
+        "distance": 22
+      },
+      {
+        "id": "poly-south",
+        "position": [
+          0,
+          7,
+          -31
+        ],
+        "color": "#ffe3b0",
+        "intensity": 0.34,
+        "distance": 22
+      },
+      {
+        "id": "poly-east",
+        "position": [
+          29,
+          7,
+          0
+        ],
+        "color": "#e4ece4",
+        "intensity": 0.24,
+        "distance": 20
+      },
+      {
+        "id": "poly-west",
+        "position": [
+          -29,
+          7,
+          0
+        ],
+        "color": "#e4ece4",
+        "intensity": 0.24,
+        "distance": 20
+      }
+    ]
+  },
+  "bounds": {
+    "type": "POLYGON",
+    "center": [
+      0,
+      50,
+      0
+    ],
+    "size": [
+      96,
+      100,
+      96
+    ],
+    "vertices": [
+      [
+        0,
+        -48
+      ],
+      [
+        24,
+        -41.569
+      ],
+      [
+        41.569,
+        -24
+      ],
+      [
+        48,
+        0
+      ],
+      [
+        41.569,
+        24
+      ],
+      [
+        24,
+        41.569
+      ],
+      [
+        0,
+        48
+      ],
+      [
+        -24,
+        41.569
+      ],
+      [
+        -41.569,
+        24
+      ],
+      [
+        -48,
+        0
+      ],
+      [
+        -41.569,
+        -24
+      ],
+      [
+        -24,
+        -41.569
+      ]
+    ]
+  },
+  "groundSize": 96,
+  "colliders": [
+    {
+      "id": "energy-core-base",
+      "type": "BOX",
+      "center": [
+        0,
+        0.48,
+        0
+      ],
+      "size": [
+        7,
+        0.96,
+        7
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "energy-core-cell",
+      "type": "BOX",
+      "center": [
+        0,
+        2.65,
+        0
+      ],
+      "size": [
+        1.8,
+        3.45,
+        1.8
+      ],
+      "surface": "glass"
+    },
+    {
+      "id": "energy-core-strut-ne",
+      "type": "BOX",
+      "center": [
+        1.55,
+        2.55,
+        1.55
+      ],
+      "size": [
+        0.36,
+        3.2,
+        0.36
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "energy-core-strut-nw",
+      "type": "BOX",
+      "center": [
+        -1.55,
+        2.55,
+        1.55
+      ],
+      "size": [
+        0.36,
+        3.2,
+        0.36
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "energy-core-strut-se",
+      "type": "BOX",
+      "center": [
+        1.55,
+        2.55,
+        -1.55
+      ],
+      "size": [
+        0.36,
+        3.2,
+        0.36
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "energy-core-strut-sw",
+      "type": "BOX",
+      "center": [
+        -1.55,
+        2.55,
+        -1.55
+      ],
+      "size": [
+        0.36,
+        3.2,
+        0.36
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-ring-north",
+      "type": "PLATFORM",
+      "center": [
+        0,
+        0.14,
+        4.3
+      ],
+      "size": [
+        10,
+        0.28,
+        1.6
+      ],
+      "solid": true,
+      "surface": "concrete"
+    },
+    {
+      "id": "core-ring-south",
+      "type": "PLATFORM",
+      "center": [
+        0,
+        0.14,
+        -4.3
+      ],
+      "size": [
+        10,
+        0.28,
+        1.6
+      ],
+      "solid": true,
+      "surface": "concrete"
+    },
+    {
+      "id": "core-ring-east",
+      "type": "PLATFORM",
+      "center": [
+        4.3,
+        0.14,
+        0
+      ],
+      "size": [
+        1.6,
+        0.28,
+        7
+      ],
+      "solid": true,
+      "surface": "concrete"
+    },
+    {
+      "id": "core-ring-west",
+      "type": "PLATFORM",
+      "center": [
+        -4.3,
+        0.14,
+        0
+      ],
+      "size": [
+        1.6,
+        0.28,
+        7
+      ],
+      "solid": true,
+      "surface": "concrete"
+    },
+    {
+      "id": "core-north-cover",
+      "type": "BOX",
+      "center": [
+        0,
+        0.75,
+        11
+      ],
+      "size": [
+        10,
+        1.5,
+        1.6
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-south-cover",
+      "type": "BOX",
+      "center": [
+        0,
+        0.75,
+        -11
+      ],
+      "size": [
+        10,
+        1.5,
+        1.6
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-east-cover",
+      "type": "BOX",
+      "center": [
+        11,
+        0.75,
+        0
+      ],
+      "size": [
+        1.6,
+        1.5,
+        10
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-west-cover",
+      "type": "BOX",
+      "center": [
+        -11,
+        0.75,
+        0
+      ],
+      "size": [
+        1.6,
+        1.5,
+        10
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-deck",
+      "type": "PLATFORM",
+      "center": [
+        0,
+        1.15,
+        31
+      ],
+      "size": [
+        12,
+        0.3,
+        8
+      ],
+      "solid": true,
+      "surface": "metal"
+    },
+    {
+      "id": "north-ramp",
+      "type": "RAMP",
+      "origin": [
+        0,
+        0,
+        23
+      ],
+      "width": 5,
+      "run": 8,
+      "rise": 1.3,
+      "forward": "POS_Z",
+      "surface": "concrete"
+    },
+    {
+      "id": "north-relay-base",
+      "type": "BOX",
+      "center": [
+        0,
+        1.58,
+        34
+      ],
+      "size": [
+        2.5,
+        0.56,
+        2.5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-relay-mast",
+      "type": "BOX",
+      "center": [
+        0,
+        3.35,
+        34
+      ],
+      "size": [
+        0.9,
+        3.25,
+        0.9
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-relay-emitter",
+      "type": "BOX",
+      "center": [
+        0,
+        5.05,
+        34
+      ],
+      "size": [
+        1.4,
+        0.5,
+        1.4
+      ],
+      "surface": "glass"
+    },
+    {
+      "id": "north-cabinet-west",
+      "type": "BOX",
+      "center": [
+        -9,
+        1.2,
+        29
+      ],
+      "size": [
+        4,
+        2.4,
+        3
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "north-cabinet-east",
+      "type": "BOX",
+      "center": [
+        9,
+        1.2,
+        29
+      ],
+      "size": [
+        4,
+        2.4,
+        3
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "south-deck",
+      "type": "PLATFORM",
+      "center": [
+        0,
+        1.15,
+        -31
+      ],
+      "size": [
+        12,
+        0.3,
+        8
+      ],
+      "solid": true,
+      "surface": "metal"
+    },
+    {
+      "id": "south-ramp",
+      "type": "RAMP",
+      "origin": [
+        0,
+        0,
+        -23
+      ],
+      "width": 5,
+      "run": 8,
+      "rise": 1.3,
+      "forward": "NEG_Z",
+      "surface": "concrete"
+    },
+    {
+      "id": "south-console-pedestal-west",
+      "type": "BOX",
+      "center": [
+        -1.55,
+        1.78,
+        -34
+      ],
+      "size": [
+        1.25,
+        0.96,
+        1.55
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-console-pedestal-east",
+      "type": "BOX",
+      "center": [
+        1.55,
+        1.78,
+        -34
+      ],
+      "size": [
+        1.25,
+        0.96,
+        1.55
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-console-desk",
+      "type": "BOX",
+      "center": [
+        0,
+        2.52,
+        -34.28
+      ],
+      "size": [
+        4.45,
+        0.82,
+        1.55
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-console-canopy",
+      "type": "BOX",
+      "center": [
+        0,
+        3.12,
+        -33.76
+      ],
+      "size": [
+        4.75,
+        0.13,
+        1.65
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-cargo-west",
+      "type": "BOX",
+      "center": [
+        -9,
+        0.55,
+        -29
+      ],
+      "size": [
+        4,
+        1.1,
+        3
+      ],
+      "surface": "wood"
+    },
+    {
+      "id": "south-cargo-east",
+      "type": "BOX",
+      "center": [
+        9,
+        0.55,
+        -29
+      ],
+      "size": [
+        4,
+        1.1,
+        3
+      ],
+      "surface": "wood"
+    },
+    {
+      "id": "west-bay-north",
+      "type": "BOX",
+      "center": [
+        -26,
+        1.4,
+        12
+      ],
+      "size": [
+        8,
+        2.8,
+        5
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "west-bay-south",
+      "type": "BOX",
+      "center": [
+        -26,
+        1.4,
+        -12
+      ],
+      "size": [
+        8,
+        2.8,
+        5
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "west-service-spine",
+      "type": "BOX",
+      "center": [
+        -34,
+        1.2,
+        0
+      ],
+      "size": [
+        4,
+        2.4,
+        10
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "west-cooler-north",
+      "type": "BOX",
+      "center": [
+        -18,
+        1.8,
+        18
+      ],
+      "size": [
+        2.4,
+        3.6,
+        2.4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "west-cooler-south",
+      "type": "BOX",
+      "center": [
+        -18,
+        1.8,
+        -18
+      ],
+      "size": [
+        2.4,
+        3.6,
+        2.4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "west-low-north",
+      "type": "BOX",
+      "center": [
+        -18,
+        0.5,
+        8
+      ],
+      "size": [
+        5,
+        1,
+        1.6
+      ],
+      "surface": "wood"
+    },
+    {
+      "id": "west-low-south",
+      "type": "BOX",
+      "center": [
+        -18,
+        0.5,
+        -8
+      ],
+      "size": [
+        5,
+        1,
+        1.6
+      ],
+      "surface": "wood"
+    },
+    {
+      "id": "east-bank-north",
+      "type": "BOX",
+      "center": [
+        26,
+        1.4,
+        12
+      ],
+      "size": [
+        8,
+        2.8,
+        5
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "east-bank-south",
+      "type": "BOX",
+      "center": [
+        26,
+        1.4,
+        -12
+      ],
+      "size": [
+        8,
+        2.8,
+        5
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "east-service-spine",
+      "type": "BOX",
+      "center": [
+        34,
+        1.2,
+        0
+      ],
+      "size": [
+        4,
+        2.4,
+        10
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-cooler-north",
+      "type": "BOX",
+      "center": [
+        18,
+        1.8,
+        18
+      ],
+      "size": [
+        2.4,
+        3.6,
+        2.4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-cooler-south",
+      "type": "BOX",
+      "center": [
+        18,
+        1.8,
+        -18
+      ],
+      "size": [
+        2.4,
+        3.6,
+        2.4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-low-north",
+      "type": "BOX",
+      "center": [
+        18,
+        0.5,
+        8
+      ],
+      "size": [
+        5,
+        1,
+        1.6
+      ],
+      "surface": "wood"
+    },
+    {
+      "id": "east-low-south",
+      "type": "BOX",
+      "center": [
+        18,
+        0.5,
+        -8
+      ],
+      "size": [
+        5,
+        1,
+        1.6
+      ],
+      "surface": "wood"
+    }
+  ],
+  "visuals": [
+    {
+      "id": "energy-core-shell",
+      "prefab": "energy-relay/core-v1",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "energy-core-base",
+        "energy-core-cell",
+        "energy-core-strut-ne",
+        "energy-core-strut-nw",
+        "energy-core-strut-se",
+        "energy-core-strut-sw"
+      ]
+    },
+    {
+      "id": "west-cooler-north-shell",
+      "prefab": "energy-relay/cooler-v1",
+      "position": [
+        -18,
+        0,
+        18
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-cooler-north"
+      ]
+    },
+    {
+      "id": "west-cooler-south-shell",
+      "prefab": "energy-relay/cooler-v1",
+      "position": [
+        -18,
+        0,
+        -18
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-cooler-south"
+      ]
+    },
+    {
+      "id": "east-cooler-north-shell",
+      "prefab": "energy-relay/cooler-v1",
+      "position": [
+        18,
+        0,
+        18
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "warm",
+      "colliderRefs": [
+        "east-cooler-north"
+      ]
+    },
+    {
+      "id": "east-cooler-south-shell",
+      "prefab": "energy-relay/cooler-v1",
+      "position": [
+        18,
+        0,
+        -18
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "warm",
+      "colliderRefs": [
+        "east-cooler-south"
+      ]
+    },
+    {
+      "id": "north-relay-shell",
+      "prefab": "energy-relay/relay-v1",
+      "position": [
+        0,
+        1.3,
+        34
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-relay-base",
+        "north-relay-mast",
+        "north-relay-emitter"
+      ]
+    },
+    {
+      "id": "core-north-cover-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        0,
+        0,
+        11
+      ],
+      "rotationY": 0,
+      "scale": [
+        2,
+        1.5,
+        1
+      ],
+      "colliderRefs": [
+        "core-north-cover"
+      ]
+    },
+    {
+      "id": "core-south-cover-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        0,
+        0,
+        -11
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        2,
+        1.5,
+        1
+      ],
+      "colliderRefs": [
+        "core-south-cover"
+      ]
+    },
+    {
+      "id": "core-east-cover-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        11,
+        0,
+        0
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        2,
+        1.5,
+        1
+      ],
+      "variant": "warm",
+      "colliderRefs": [
+        "core-east-cover"
+      ]
+    },
+    {
+      "id": "core-west-cover-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        -11,
+        0,
+        0
+      ],
+      "rotationY": -1.570796,
+      "scale": [
+        2,
+        1.5,
+        1
+      ],
+      "colliderRefs": [
+        "core-west-cover"
+      ]
+    },
+    {
+      "id": "north-cabinet-west-shell",
+      "prefab": "energy-relay/cabinet-v1",
+      "position": [
+        -9,
+        0,
+        29
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "relay",
+      "colliderRefs": [
+        "north-cabinet-west"
+      ]
+    },
+    {
+      "id": "north-cabinet-east-shell",
+      "prefab": "energy-relay/cabinet-v1",
+      "position": [
+        9,
+        0,
+        29
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "relay",
+      "colliderRefs": [
+        "north-cabinet-east"
+      ]
+    },
+    {
+      "id": "south-console-shell",
+      "prefab": "energy-relay/transit-console-v1",
+      "position": [
+        0,
+        1.3,
+        -34
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "transit",
+      "colliderRefs": [
+        "south-console-pedestal-west",
+        "south-console-pedestal-east",
+        "south-console-desk",
+        "south-console-canopy"
+      ]
+    },
+    {
+      "id": "south-cargo-west-shell",
+      "prefab": "energy-relay/cargo-v1",
+      "position": [
+        -9,
+        0,
+        -29
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        0.733333,
+        1
+      ],
+      "variant": "transit",
+      "colliderRefs": [
+        "south-cargo-west"
+      ]
+    },
+    {
+      "id": "south-cargo-east-shell",
+      "prefab": "energy-relay/cargo-v1",
+      "position": [
+        9,
+        0,
+        -29
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        0.733333,
+        1
+      ],
+      "variant": "transit",
+      "colliderRefs": [
+        "south-cargo-east"
+      ]
+    },
+    {
+      "id": "west-bay-north-shell",
+      "prefab": "energy-relay/equipment-bay-v1",
+      "position": [
+        -26,
+        0,
+        12
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "maintenance",
+      "colliderRefs": [
+        "west-bay-north"
+      ]
+    },
+    {
+      "id": "west-bay-south-shell",
+      "prefab": "energy-relay/equipment-bay-v1",
+      "position": [
+        -26,
+        0,
+        -12
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "maintenance",
+      "colliderRefs": [
+        "west-bay-south"
+      ]
+    },
+    {
+      "id": "west-spine-shell",
+      "prefab": "energy-relay/service-spine-v1",
+      "position": [
+        -34,
+        0,
+        0
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "maintenance",
+      "colliderRefs": [
+        "west-service-spine"
+      ]
+    },
+    {
+      "id": "west-low-north-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        -18,
+        0,
+        8
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-low-north"
+      ]
+    },
+    {
+      "id": "west-low-south-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        -18,
+        0,
+        -8
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-low-south"
+      ]
+    },
+    {
+      "id": "east-bank-north-shell",
+      "prefab": "energy-relay/equipment-bay-v1",
+      "position": [
+        26,
+        0,
+        12
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "capacitor",
+      "colliderRefs": [
+        "east-bank-north"
+      ]
+    },
+    {
+      "id": "east-bank-south-shell",
+      "prefab": "energy-relay/equipment-bay-v1",
+      "position": [
+        26,
+        0,
+        -12
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "capacitor",
+      "colliderRefs": [
+        "east-bank-south"
+      ]
+    },
+    {
+      "id": "east-spine-shell",
+      "prefab": "energy-relay/service-spine-v1",
+      "position": [
+        34,
+        0,
+        0
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "capacitor",
+      "colliderRefs": [
+        "east-service-spine"
+      ]
+    },
+    {
+      "id": "east-low-north-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        18,
+        0,
+        8
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "warm",
+      "colliderRefs": [
+        "east-low-north"
+      ]
+    },
+    {
+      "id": "east-low-south-shell",
+      "prefab": "energy-relay/cover-v1",
+      "position": [
+        18,
+        0,
+        -8
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "warm",
+      "colliderRefs": [
+        "east-low-south"
+      ]
+    }
+  ],
+  "spawnZones": [
+    {
+      "id": "polygon-outer-ring",
+      "modes": [
+        "FFA"
+      ],
+      "team": "ANY",
+      "clearance": 3,
+      "candidates": [
+        {
+          "position": [
+            0,
+            0,
+            -39
+          ],
+          "yaw": 3.141593
+        },
+        {
+          "position": [
+            20,
+            0,
+            -34
+          ],
+          "yaw": 2.612
+        },
+        {
+          "position": [
+            34,
+            0,
+            -20
+          ],
+          "yaw": 2.103
+        },
+        {
+          "position": [
+            39,
+            0,
+            0
+          ],
+          "yaw": 1.570796
+        },
+        {
+          "position": [
+            34,
+            0,
+            20
+          ],
+          "yaw": 1.039
+        },
+        {
+          "position": [
+            20,
+            0,
+            34
+          ],
+          "yaw": 0.529
+        },
+        {
+          "position": [
+            0,
+            0,
+            39
+          ],
+          "yaw": 0
+        },
+        {
+          "position": [
+            -20,
+            0,
+            34
+          ],
+          "yaw": -0.529
+        },
+        {
+          "position": [
+            -34,
+            0,
+            20
+          ],
+          "yaw": -1.039
+        },
+        {
+          "position": [
+            -39,
+            0,
+            0
+          ],
+          "yaw": -1.570796
+        },
+        {
+          "position": [
+            -34,
+            0,
+            -20
+          ],
+          "yaw": -2.103
+        },
+        {
+          "position": [
+            -20,
+            0,
+            -34
+          ],
+          "yaw": -2.612
+        }
+      ]
+    }
+  ],
+  "pickups": [
+    {
+      "id": "sniper-01",
+      "weaponId": "sniper",
+      "position": [
+        0,
+        1.3,
+        28
+      ]
+    },
+    {
+      "id": "ak47-01",
+      "weaponId": "ak47",
+      "position": [
+        -26,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "glock-01",
+      "weaponId": "glock",
+      "position": [
+        26,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "relay-medkit-01",
+      "itemType": "MEDKIT_SMALL",
+      "position": [
+        -13.5,
+        0,
+        -14
+      ]
+    },
+    {
+      "id": "relay-vest-01",
+      "itemType": "ARMOR_VEST",
+      "position": [
+        13.5,
+        0,
+        -14
+      ]
+    },
+    {
+      "id": "relay-speed-01",
+      "itemType": "SPEED_BOOST",
+      "position": [
+        0,
+        0,
+        14
+      ]
+    },
+    {
+      "id": "relay-frag-01",
+      "itemType": "THROWABLE_FRAG",
+      "position": [
+        -13.5,
+        0,
+        14
+      ]
+    },
+    {
+      "id": "relay-flash-01",
+      "itemType": "THROWABLE_FLASH",
+      "position": [
+        13.5,
+        0,
+        14
+      ]
+    },
+    {
+      "id": "relay-smoke-01",
+      "itemType": "THROWABLE_SMOKE",
+      "position": [
+        0,
+        0,
+        -14
+      ]
+    },
+    {
+      "id": "relay-ammo-01",
+      "itemType": "AMMO_BOX",
+      "position": [
+        -20,
+        0,
+        0
+      ],
+      "respawnMinMs": 8000,
+      "respawnMaxMs": 12000
+    },
+    {
+      "id": "relay-ammo-02",
+      "itemType": "AMMO_BOX",
+      "position": [
+        20,
+        0,
+        0
+      ],
+      "respawnMinMs": 8000,
+      "respawnMaxMs": 12000
+    },
+    {
+      "id": "relay-speed-02",
+      "itemType": "SPEED_BOOST",
+      "position": [
+        -22,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "relay-vest-02",
+      "itemType": "ARMOR_VEST",
+      "position": [
+        22,
+        0,
+        20
+      ]
+    },
+    {
+      "id": "relay-stealth-01",
+      "itemType": "STEALTH_FIELD",
+      "position": [
+        -18,
+        0,
+        -22
+      ]
+    }
+  ],
+  "navigationNodes": [
+    {
+      "id": "core-n",
+      "position": [
+        0,
+        0,
+        14
+      ],
+      "links": [
+        "core-ne",
+        "core-nw"
+      ]
+    },
+    {
+      "id": "core-ne",
+      "position": [
+        13.5,
+        0,
+        14
+      ],
+      "links": [
+        "core-n",
+        "core-e"
+      ]
+    },
+    {
+      "id": "core-e",
+      "position": [
+        13.5,
+        0,
+        0
+      ],
+      "links": [
+        "core-ne",
+        "core-se"
+      ]
+    },
+    {
+      "id": "core-se",
+      "position": [
+        13.5,
+        0,
+        -14
+      ],
+      "links": [
+        "core-e",
+        "core-s"
+      ]
+    },
+    {
+      "id": "core-s",
+      "position": [
+        0,
+        0,
+        -14
+      ],
+      "links": [
+        "core-se",
+        "core-sw"
+      ]
+    },
+    {
+      "id": "core-sw",
+      "position": [
+        -13.5,
+        0,
+        -14
+      ],
+      "links": [
+        "core-s",
+        "core-w"
+      ]
+    },
+    {
+      "id": "core-w",
+      "position": [
+        -13.5,
+        0,
+        0
+      ],
+      "links": [
+        "core-sw",
+        "core-nw"
+      ]
+    },
+    {
+      "id": "core-nw",
+      "position": [
+        -13.5,
+        0,
+        14
+      ],
+      "links": [
+        "core-w",
+        "core-n"
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "relay-core",
+      "type": "ENERGY_CORE",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "maintenance-bay",
+      "type": "MAINTENANCE_BAY",
+      "position": [
+        -27,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "capacitor-bank",
+      "type": "CAPACITOR_BANK",
+      "position": [
+        27,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "north-relay",
+      "type": "RELAY_TOWER",
+      "position": [
+        0,
+        1.3,
+        34
+      ]
+    },
+    {
+      "id": "south-transit",
+      "type": "TRANSIT_PLATFORM",
+      "position": [
+        0,
+        1.3,
+        -31
+      ]
+    },
+    {
+      "id": "west-cooling",
+      "type": "COOLING_STACK",
+      "position": [
+        -18,
+        0,
+        18
+      ]
+    },
+    {
+      "id": "east-cooling",
+      "type": "COOLING_STACK",
+      "position": [
+        18,
+        0,
+        18
+      ]
+    }
+  ]
+}

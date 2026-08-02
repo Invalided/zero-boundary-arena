@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "id": "map-runtime-golden",
+  "revision": 2,
+  "units": "meter",
+  "environment": {"theme": "test", "groundPrefab": "floor", "sky": "day"},
+  "bounds": {"type": "BOX", "center": [0, 5, 0], "size": [20, 10, 20]},
+  "groundSize": 20,
+  "colliders": [
+    {"id": "box", "type": "BOX", "center": [0, 1, 0], "size": [2, 2, 2], "surface": "concrete"},
+    {"id": "solid-platform", "type": "PLATFORM", "center": [4, 1.9, 0], "size": [3, 0.2, 3], "solid": true, "surface": "metal"},
+    {"id": "one-way-platform", "type": "PLATFORM", "center": [-4, 1.9, 0], "size": [3, 0.2, 3], "solid": false, "surface": "metal"},
+    {"id": "ramp-pos-z", "type": "RAMP", "origin": [0, 0, -8], "width": 2, "run": 4, "rise": 2, "forward": "POS_Z", "surface": "metal"},
+    {"id": "ramp-neg-x", "type": "RAMP", "origin": [8, 0, 5], "width": 2, "run": 4, "rise": 2, "forward": "NEG_X", "surface": "metal"},
+    {"id": "ramp-pos-x", "type": "RAMP", "origin": [-8, 0, 5], "width": 2, "run": 4, "rise": 2, "forward": "POS_X", "surface": "metal"},
+    {"id": "ramp-neg-z", "type": "RAMP", "origin": [5, 0, 8], "width": 2, "run": 4, "rise": 2, "forward": "NEG_Z", "surface": "metal"}
+  ],
+  "visuals": [],
+  "spawnZones": [
+    {"id": "test-spawn", "modes": ["FFA"], "team": "ANY", "clearance": 1,
+      "candidates": [{"position": [-8, 0, 8], "yaw": 0}]}
+  ],
+  "pickups": [],
+  "landmarks": []
+}

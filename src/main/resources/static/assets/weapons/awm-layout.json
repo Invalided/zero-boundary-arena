@@ -1,0 +1,20 @@
+{
+  "weaponId": "21ed05cf-8e36-4ccb-b23f-1caa6ae38e70",
+  "weaponCode": "awm.standard",
+  "audio": { "volume": 1.0, "scopeVolume": 1.30, "cycleVolume": 1.40, "reloadVolume": 1.12, "switchVolume": 1.10, "casingVolume": 0.60 },
+  "muzzleProfile": "SNIPER_HEAVY",
+  "muzzleOverrides": { "muzzleScale": { "min": 0.78, "variance": 0.5 }, "muzzleLight": 7.0, "muzzleLightDistance": 3.2 },
+  "profile": "SNIPER_STANDARD",
+  "scale": 0.23,
+  "axisRotation": [1.50838, 1.542302, -1.528074],
+  "viewPosition": [0.025583, -0.133365, -0.140868],
+  "viewRotation": [0.058302, 0.074895, 0.031538],
+  "pivotPositions": {
+    "LeftArmPivot": [-0.098041, -0.425002, 0.570731],
+    "RightArmPivot": [0, -0.15, 0.35]
+  },
+  "pivotRotations": {
+    "LeftArmPivot": [0, 0, 0],
+    "RightArmPivot": [0, 0, 0]
+  }
+}

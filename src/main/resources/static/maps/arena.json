@@ -1,0 +1,2299 @@
+{
+  "schemaVersion": 2,
+  "id": "neon-arena",
+  "revision": 16,
+  "units": "meter",
+  "environment": {
+    "theme": "simulation_arena_night",
+    "groundPrefab": "arena/floor-panels-v1",
+    "sky": "night-clear",
+    "atmosphere": {
+      "backgroundColor": "#101a31",
+      "fogColor": "#10182d",
+      "fogNear": 42,
+      "fogFar": 120,
+      "ambientSkyColor": "#b8cad5",
+      "ambientGroundColor": "#161b1f",
+      "ambientIntensity": 0.95,
+      "mainLightColor": "#c7d8e2",
+      "mainLightIntensity": 1.25,
+      "mainLightPosition": [
+        -28,
+        42,
+        -35
+      ],
+      "celestialColor": "#e9f3ff",
+      "celestialPosition": [
+        -42,
+        48,
+        -82
+      ],
+      "celestialRadius": 4.2,
+      "stars": true,
+      "exposure": 1.12
+    },
+    "surfacePalette": {
+      "concrete": "#3b4658",
+      "metal": "#273b55",
+      "wood": "#54483d",
+      "ramp": "#314b61",
+      "guide": "#607080"
+    },
+    "boundaryWall": {
+      "height": 4.6,
+      "thickness": 0.8,
+      "color": "#29343a",
+      "roughness": 0.76,
+      "metalness": 0.12,
+      "accentColor": "#72d8df",
+      "accentHeight": 4.08
+    },
+    "ground": {
+      "baseColor": "#242d31",
+      "seamColor": "#3b484e",
+      "speckleColor": "#59666b",
+      "panelMeters": 4,
+      "roughness": 0.82,
+      "metalness": 0.06
+    },
+    "floorZones": [
+      {
+        "id": "floor-c0",
+        "center": [
+          0,
+          0
+        ],
+        "size": [
+          24,
+          24
+        ],
+        "color": "#273236",
+        "seamColor": "#425459",
+        "accentColor": "#38c7d9",
+        "label": "ZERO CORE",
+        "labelPosition": [
+          0,
+          5.3
+        ],
+        "rotationY": 0,
+        "roughness": 0.74,
+        "metalness": 0.12
+      },
+      {
+        "id": "floor-w1",
+        "center": [
+          -37,
+          0
+        ],
+        "size": [
+          24,
+          42
+        ],
+        "color": "#2d363b",
+        "seamColor": "#46555c",
+        "accentColor": "#38c7d9",
+        "label": "OUTER WEST",
+        "labelPosition": [
+          -37,
+          4.2
+        ],
+        "rotationY": 1.570796,
+        "roughness": 0.79,
+        "metalness": 0.08
+      },
+      {
+        "id": "floor-e1",
+        "center": [
+          37,
+          0
+        ],
+        "size": [
+          24,
+          42
+        ],
+        "color": "#332f37",
+        "seamColor": "#504956",
+        "accentColor": "#d15acb",
+        "label": "OUTER EAST",
+        "labelPosition": [
+          37,
+          3.2
+        ],
+        "rotationY": 1.570796,
+        "roughness": 0.79,
+        "metalness": 0.08
+      },
+      {
+        "id": "floor-n1",
+        "center": [
+          0,
+          34
+        ],
+        "size": [
+          54,
+          30
+        ],
+        "color": "#303b40",
+        "seamColor": "#4b5c62",
+        "accentColor": "#dce7ef",
+        "label": "TRAINING",
+        "labelPosition": [
+          0,
+          30
+        ],
+        "rotationY": 0,
+        "roughness": 0.84,
+        "metalness": 0.04
+      },
+      {
+        "id": "floor-s1",
+        "center": [
+          0,
+          -34
+        ],
+        "size": [
+          58,
+          30
+        ],
+        "color": "#2d3334",
+        "seamColor": "#4b5554",
+        "accentColor": "#f0a044",
+        "label": "SERVICE BAY",
+        "labelPosition": [
+          0,
+          -30.5
+        ],
+        "rotationY": 0,
+        "roughness": 0.72,
+        "metalness": 0.18
+      }
+    ],
+    "floorDecals": [
+      {
+        "id": "warning-service-front",
+        "type": "WARNING_STRIPES",
+        "center": [
+          0,
+          -35.25
+        ],
+        "size": [
+          10,
+          0.72
+        ],
+        "color": "#f0a044",
+        "rotationY": 0,
+        "opacity": 0.62
+      },
+      {
+        "id": "warning-machinery-west",
+        "type": "WARNING_STRIPES",
+        "center": [
+          -27,
+          -32.15
+        ],
+        "size": [
+          9,
+          0.58
+        ],
+        "color": "#f0a044",
+        "rotationY": 0,
+        "opacity": 0.52
+      },
+      {
+        "id": "warning-machinery-east",
+        "type": "WARNING_STRIPES",
+        "center": [
+          27,
+          -32.15
+        ],
+        "size": [
+          9,
+          0.58
+        ],
+        "color": "#f0a044",
+        "rotationY": 0,
+        "opacity": 0.52
+      },
+      {
+        "id": "route-west-core",
+        "type": "ROUTE_ARROW",
+        "center": [
+          -18,
+          0
+        ],
+        "size": [
+          4.2,
+          1.25
+        ],
+        "color": "#38c7d9",
+        "rotationY": 0,
+        "opacity": 0.42
+      },
+      {
+        "id": "route-east-core",
+        "type": "ROUTE_ARROW",
+        "center": [
+          18,
+          0
+        ],
+        "size": [
+          4.2,
+          1.25
+        ],
+        "color": "#d15acb",
+        "rotationY": 3.141593,
+        "opacity": 0.42
+      },
+      {
+        "id": "route-north-core",
+        "type": "ROUTE_ARROW",
+        "center": [
+          0,
+          13.5
+        ],
+        "size": [
+          4.2,
+          1.25
+        ],
+        "color": "#dce7ef",
+        "rotationY": 1.570796,
+        "opacity": 0.4
+      },
+      {
+        "id": "route-south-core",
+        "type": "ROUTE_ARROW",
+        "center": [
+          0,
+          -15
+        ],
+        "size": [
+          4.2,
+          1.25
+        ],
+        "color": "#f0a044",
+        "rotationY": -1.570796,
+        "opacity": 0.42
+      }
+    ],
+    "lights": [
+      {
+        "id": "light-core",
+        "position": [
+          0,
+          8,
+          0
+        ],
+        "color": "#dfeaec",
+        "intensity": 1.75,
+        "distance": 24
+      },
+      {
+        "id": "light-north",
+        "position": [
+          0,
+          8,
+          29
+        ],
+        "color": "#c8dce5",
+        "intensity": 1.6,
+        "distance": 25
+      },
+      {
+        "id": "light-south",
+        "position": [
+          0,
+          7,
+          -31
+        ],
+        "color": "#f0bd82",
+        "intensity": 1.65,
+        "distance": 25
+      },
+      {
+        "id": "light-west",
+        "position": [
+          -36,
+          7,
+          0
+        ],
+        "color": "#cfe7ec",
+        "intensity": 1.4,
+        "distance": 23
+      },
+      {
+        "id": "light-east",
+        "position": [
+          36,
+          7,
+          -1
+        ],
+        "color": "#e2c9df",
+        "intensity": 1.4,
+        "distance": 23
+      },
+      {
+        "id": "light-core-status",
+        "position": [
+          0,
+          4.2,
+          0
+        ],
+        "color": "#38c7d9",
+        "intensity": 0.8,
+        "distance": 13
+      },
+      {
+        "id": "light-north-deck",
+        "position": [
+          0,
+          5.8,
+          23
+        ],
+        "color": "#b8dce5",
+        "intensity": 1.0,
+        "distance": 17
+      },
+      {
+        "id": "light-south-west",
+        "position": [
+          -22,
+          5.5,
+          -31
+        ],
+        "color": "#e4ae74",
+        "intensity": 0.9,
+        "distance": 16
+      },
+      {
+        "id": "light-south-east",
+        "position": [
+          22,
+          5.5,
+          -31
+        ],
+        "color": "#e4ae74",
+        "intensity": 0.9,
+        "distance": 16
+      }
+    ]
+  },
+  "bounds": {
+    "type": "BOX",
+    "center": [
+      0,
+      50,
+      0
+    ],
+    "size": [
+      98,
+      100,
+      98
+    ]
+  },
+  "groundSize": 100,
+  "colliders": [
+    {
+      "id": "core-base",
+      "type": "BOX",
+      "center": [
+        0,
+        1.5,
+        0
+      ],
+      "size": [
+        7,
+        3,
+        7
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-screen-north",
+      "type": "BOX",
+      "center": [
+        -2.5,
+        1.4,
+        8
+      ],
+      "size": [
+        7,
+        2.8,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-screen-south",
+      "type": "BOX",
+      "center": [
+        2.5,
+        1.4,
+        -8
+      ],
+      "size": [
+        7,
+        2.8,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "core-screen-west",
+      "type": "BOX",
+      "center": [
+        -8,
+        1.4,
+        2.5
+      ],
+      "size": [
+        2,
+        2.8,
+        7
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "core-screen-east",
+      "type": "BOX",
+      "center": [
+        8,
+        1.4,
+        -2.5
+      ],
+      "size": [
+        2,
+        2.8,
+        7
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "west-screen-north",
+      "type": "BOX",
+      "center": [
+        -33,
+        2.5,
+        10
+      ],
+      "size": [
+        3,
+        5,
+        12
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "west-terminal",
+      "type": "BOX",
+      "center": [
+        -39,
+        1.4,
+        0
+      ],
+      "size": [
+        6,
+        2.8,
+        5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "west-cover-north",
+      "type": "BOX",
+      "center": [
+        -25,
+        1.1,
+        15
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "west-cover-south",
+      "type": "BOX",
+      "center": [
+        -25,
+        1.1,
+        -15
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-screen-south",
+      "type": "BOX",
+      "center": [
+        33,
+        2.5,
+        -12
+      ],
+      "size": [
+        3,
+        5,
+        12
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "east-terminal",
+      "type": "BOX",
+      "center": [
+        39,
+        1.4,
+        -1
+      ],
+      "size": [
+        6,
+        2.8,
+        5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-cover-north",
+      "type": "BOX",
+      "center": [
+        25,
+        1.1,
+        14
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "east-cover-south",
+      "type": "BOX",
+      "center": [
+        25,
+        1.1,
+        -16
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-training-platform",
+      "type": "PLATFORM",
+      "center": [
+        0,
+        2,
+        24
+      ],
+      "size": [
+        8,
+        0.4,
+        6
+      ],
+      "solid": true,
+      "surface": "metal"
+    },
+    {
+      "id": "north-training-platform-base",
+      "type": "BOX",
+      "center": [
+        0,
+        0.9,
+        24
+      ],
+      "size": [
+        7.4,
+        1.8,
+        5.4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-training-ramp",
+      "type": "RAMP",
+      "origin": [
+        0,
+        0,
+        15
+      ],
+      "width": 3,
+      "run": 6,
+      "rise": 2.2,
+      "forward": "POS_Z",
+      "surface": "metal"
+    },
+    {
+      "id": "north-platform-counter-ramp",
+      "type": "RAMP",
+      "origin": [
+        10,
+        0,
+        24
+      ],
+      "width": 3,
+      "run": 6,
+      "rise": 2.2,
+      "forward": "NEG_X",
+      "surface": "metal"
+    },
+    {
+      "id": "north-platform-console",
+      "type": "BOX",
+      "center": [
+        0,
+        2.8,
+        24
+      ],
+      "size": [
+        1.8,
+        1.2,
+        1.5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-cover-west",
+      "type": "BOX",
+      "center": [
+        -14,
+        1.2,
+        19
+      ],
+      "size": [
+        8,
+        2.4,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-cover-east",
+      "type": "BOX",
+      "center": [
+        15,
+        1.2,
+        21
+      ],
+      "size": [
+        8,
+        2.4,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "north-pillar-west",
+      "type": "BOX",
+      "center": [
+        -27,
+        2.5,
+        27
+      ],
+      "size": [
+        3,
+        5,
+        9
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "north-pillar-east",
+      "type": "BOX",
+      "center": [
+        27,
+        2.5,
+        29
+      ],
+      "size": [
+        3,
+        5,
+        9
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "north-rear-screen-west",
+      "type": "BOX",
+      "center": [
+        -17,
+        2.5,
+        35
+      ],
+      "size": [
+        22,
+        5,
+        2
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "north-rear-screen-east",
+      "type": "BOX",
+      "center": [
+        17,
+        2.5,
+        35
+      ],
+      "size": [
+        22,
+        5,
+        2
+      ],
+      "surface": "concrete"
+    },
+    {
+      "id": "south-unit-west",
+      "type": "BOX",
+      "center": [
+        -18,
+        2,
+        -19
+      ],
+      "size": [
+        8,
+        4,
+        4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-unit-east",
+      "type": "BOX",
+      "center": [
+        18,
+        2,
+        -21
+      ],
+      "size": [
+        8,
+        4,
+        4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-center-cover-west",
+      "type": "BOX",
+      "center": [
+        -5.5,
+        1.1,
+        -30
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-center-cover-east",
+      "type": "BOX",
+      "center": [
+        5.5,
+        1.1,
+        -30
+      ],
+      "size": [
+        7,
+        2.2,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-machinery-west",
+      "type": "BOX",
+      "center": [
+        -27,
+        2,
+        -35
+      ],
+      "size": [
+        9,
+        4,
+        5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-machinery-east",
+      "type": "BOX",
+      "center": [
+        27,
+        2,
+        -35
+      ],
+      "size": [
+        9,
+        4,
+        5
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-service-block",
+      "type": "BOX",
+      "center": [
+        0,
+        1.5,
+        -38
+      ],
+      "size": [
+        10,
+        3,
+        4
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-service-step",
+      "type": "BOX",
+      "center": [
+        6.5,
+        0.6,
+        -38
+      ],
+      "size": [
+        3,
+        1.2,
+        3
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "south-service-top-cover",
+      "type": "BOX",
+      "center": [
+        0,
+        3.6,
+        -39.35
+      ],
+      "size": [
+        5,
+        1.2,
+        1.1
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "spawn-divider-west",
+      "type": "BOX",
+      "center": [
+        -43,
+        1.5,
+        0
+      ],
+      "size": [
+        2,
+        3,
+        8
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "spawn-divider-east",
+      "type": "BOX",
+      "center": [
+        43,
+        1.5,
+        -2
+      ],
+      "size": [
+        2,
+        3,
+        8
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "spawn-divider-north",
+      "type": "BOX",
+      "center": [
+        0,
+        1.5,
+        41
+      ],
+      "size": [
+        8,
+        3,
+        2
+      ],
+      "surface": "metal"
+    },
+    {
+      "id": "spawn-divider-south",
+      "type": "BOX",
+      "center": [
+        0,
+        1.5,
+        -43
+      ],
+      "size": [
+        8,
+        3,
+        2
+      ],
+      "surface": "metal"
+    }
+  ],
+  "visuals": [
+    {
+      "id": "zero-core-shell",
+      "prefab": "zero-arena/core-v1",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "core-base"
+      ]
+    },
+    {
+      "id": "north-training-platform-shell",
+      "prefab": "zero-arena/training-platform-v1",
+      "position": [
+        0,
+        0,
+        24
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-training-platform",
+        "north-training-platform-base"
+      ]
+    },
+    {
+      "id": "north-training-ramp-shell",
+      "prefab": "zero-arena/training-ramp-v1",
+      "position": [
+        0,
+        0,
+        18
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-training-ramp"
+      ]
+    },
+    {
+      "id": "north-counter-ramp-shell",
+      "prefab": "zero-arena/training-ramp-v1",
+      "position": [
+        7,
+        0,
+        24
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-platform-counter-ramp"
+      ]
+    },
+    {
+      "id": "north-platform-console-shell",
+      "prefab": "zero-arena/control-console-v1",
+      "position": [
+        0,
+        2.2,
+        24
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-platform-console"
+      ]
+    },
+    {
+      "id": "west-ready-screen-north",
+      "prefab": "zero-arena/ready-screen-v1",
+      "position": [
+        -33,
+        0,
+        10
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-screen-north"
+      ]
+    },
+    {
+      "id": "west-ready-terminal",
+      "prefab": "zero-arena/ready-terminal-v1",
+      "position": [
+        -39,
+        0,
+        0
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "west-terminal"
+      ]
+    },
+    {
+      "id": "west-ready-cover-north",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        -25,
+        0,
+        15
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "outer-cool",
+      "colliderRefs": [
+        "west-cover-north"
+      ]
+    },
+    {
+      "id": "west-ready-cover-south",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        -25,
+        0,
+        -15
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "outer-cool",
+      "colliderRefs": [
+        "west-cover-south"
+      ]
+    },
+    {
+      "id": "east-ready-screen-south",
+      "prefab": "zero-arena/ready-screen-v1",
+      "position": [
+        33,
+        0,
+        -12
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "east-route",
+      "colliderRefs": [
+        "east-screen-south"
+      ]
+    },
+    {
+      "id": "east-ready-terminal",
+      "prefab": "zero-arena/ready-terminal-v1",
+      "position": [
+        39,
+        0,
+        -1
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "east-route",
+      "colliderRefs": [
+        "east-terminal"
+      ]
+    },
+    {
+      "id": "east-ready-cover-north",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        25,
+        0,
+        14
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "outer-magenta",
+      "colliderRefs": [
+        "east-cover-north"
+      ]
+    },
+    {
+      "id": "east-ready-cover-south",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        25,
+        0,
+        -16
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "outer-magenta",
+      "colliderRefs": [
+        "east-cover-south"
+      ]
+    },
+    {
+      "id": "south-maintenance-unit-west",
+      "prefab": "zero-arena/maintenance-unit-v1",
+      "position": [
+        -18,
+        0,
+        -19
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "south-unit-west"
+      ]
+    },
+    {
+      "id": "south-maintenance-unit-east",
+      "prefab": "zero-arena/maintenance-unit-v1",
+      "position": [
+        18,
+        0,
+        -21
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "south-unit-east"
+      ]
+    },
+    {
+      "id": "south-center-cover-west-shell",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        -5.5,
+        0,
+        -30
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "service-warm",
+      "colliderRefs": [
+        "south-center-cover-west"
+      ]
+    },
+    {
+      "id": "south-center-cover-east-shell",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        5.5,
+        0,
+        -30
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "service-warm",
+      "colliderRefs": [
+        "south-center-cover-east"
+      ]
+    },
+    {
+      "id": "south-machinery-west-shell",
+      "prefab": "zero-arena/maintenance-machinery-v1",
+      "position": [
+        -27,
+        0,
+        -35
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "south-machinery-west"
+      ]
+    },
+    {
+      "id": "south-machinery-east-shell",
+      "prefab": "zero-arena/maintenance-machinery-v1",
+      "position": [
+        27,
+        0,
+        -35
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "south-machinery-east"
+      ]
+    },
+    {
+      "id": "south-service-block-shell",
+      "prefab": "zero-arena/service-block-v1",
+      "position": [
+        0,
+        0,
+        -38
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "south-service-block"
+      ]
+    },
+    {
+      "id": "south-service-step-shell",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        6.5,
+        0,
+        -38
+      ],
+      "rotationY": 0,
+      "scale": [
+        0.428571,
+        0.545455,
+        1.5
+      ],
+      "variant": "service-warm",
+      "colliderRefs": [
+        "south-service-step"
+      ]
+    },
+    {
+      "id": "south-service-top-cover-shell",
+      "prefab": "zero-arena/low-cover-v1",
+      "position": [
+        0,
+        3,
+        -39.35
+      ],
+      "rotationY": 0,
+      "scale": [
+        0.714286,
+        0.545455,
+        0.55
+      ],
+      "variant": "service-warm",
+      "colliderRefs": [
+        "south-service-top-cover"
+      ]
+    },
+    {
+      "id": "core-screen-north-shell",
+      "prefab": "zero-arena/core-screen-v1",
+      "position": [
+        -2.5,
+        0,
+        8
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "core-screen-north"
+      ]
+    },
+    {
+      "id": "core-screen-south-shell",
+      "prefab": "zero-arena/core-screen-v1",
+      "position": [
+        2.5,
+        0,
+        -8
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "core-screen-south"
+      ]
+    },
+    {
+      "id": "core-screen-west-shell",
+      "prefab": "zero-arena/core-screen-v1",
+      "position": [
+        -8,
+        0,
+        2.5
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "core-screen-west"
+      ]
+    },
+    {
+      "id": "core-screen-east-shell",
+      "prefab": "zero-arena/core-screen-v1",
+      "position": [
+        8,
+        0,
+        -2.5
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "core-screen-east"
+      ]
+    },
+    {
+      "id": "north-cover-west-shell",
+      "prefab": "zero-arena/training-cover-v1",
+      "position": [
+        -14,
+        0,
+        19
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-cover-west"
+      ]
+    },
+    {
+      "id": "north-cover-east-shell",
+      "prefab": "zero-arena/training-cover-v1",
+      "position": [
+        15,
+        0,
+        21
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-cover-east"
+      ]
+    },
+    {
+      "id": "north-pillar-west-shell",
+      "prefab": "zero-arena/training-pillar-v1",
+      "position": [
+        -27,
+        0,
+        27
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-pillar-west"
+      ]
+    },
+    {
+      "id": "north-pillar-east-shell",
+      "prefab": "zero-arena/training-pillar-v1",
+      "position": [
+        27,
+        0,
+        29
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-pillar-east"
+      ]
+    },
+    {
+      "id": "north-rear-screen-west-shell",
+      "prefab": "zero-arena/training-rear-wall-v1",
+      "position": [
+        -17,
+        0,
+        35
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-rear-screen-west"
+      ]
+    },
+    {
+      "id": "north-rear-screen-east-shell",
+      "prefab": "zero-arena/training-rear-wall-v1",
+      "position": [
+        17,
+        0,
+        35
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "north-rear-screen-east"
+      ]
+    },
+    {
+      "id": "spawn-divider-west-shell",
+      "prefab": "zero-arena/spawn-divider-v1",
+      "position": [
+        -43,
+        0,
+        0
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "spawn-divider-west"
+      ]
+    },
+    {
+      "id": "spawn-divider-east-shell",
+      "prefab": "zero-arena/spawn-divider-v1",
+      "position": [
+        43,
+        0,
+        -2
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "spawn-divider-east"
+      ]
+    },
+    {
+      "id": "spawn-divider-north-shell",
+      "prefab": "zero-arena/spawn-divider-v1",
+      "position": [
+        0,
+        0,
+        41
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "spawn-divider-north"
+      ]
+    },
+    {
+      "id": "spawn-divider-south-shell",
+      "prefab": "zero-arena/spawn-divider-v1",
+      "position": [
+        0,
+        0,
+        -43
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "colliderRefs": [
+        "spawn-divider-south"
+      ]
+    },
+    {
+      "id": "zone-marker-n1",
+      "prefab": "zero-arena/zone-marker-n1",
+      "position": [
+        -17,
+        3.8,
+        33.94
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 55,
+      "colliderRefs": []
+    },
+    {
+      "id": "zone-marker-s1",
+      "prefab": "zero-arena/zone-marker-s1",
+      "position": [
+        0,
+        2.05,
+        -35.94
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 55,
+      "colliderRefs": []
+    },
+    {
+      "id": "fixture-light-core",
+      "prefab": "zero-arena/overhead-light-v1",
+      "position": [
+        0,
+        6.2,
+        0
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "cyan",
+      "cullDistance": 70,
+      "colliderRefs": []
+    },
+    {
+      "id": "fixture-light-north",
+      "prefab": "zero-arena/overhead-light-v1",
+      "position": [
+        0,
+        6.4,
+        29
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 70,
+      "colliderRefs": []
+    },
+    {
+      "id": "fixture-light-south",
+      "prefab": "zero-arena/overhead-light-v1",
+      "position": [
+        0,
+        5.8,
+        -31
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "variant": "warm",
+      "cullDistance": 70,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-hatch-core-north-west",
+      "prefab": "zero-arena/floor-hatch-v1",
+      "position": [
+        -5.5,
+        0.012,
+        5.5
+      ],
+      "rotationY": 0,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 48,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-hatch-core-south-east",
+      "prefab": "zero-arena/floor-hatch-v1",
+      "position": [
+        5.5,
+        0.012,
+        -5.5
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 48,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-hatch-west-ready",
+      "prefab": "zero-arena/floor-hatch-v1",
+      "position": [
+        -38,
+        0.012,
+        7
+      ],
+      "rotationY": 0,
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "cullDistance": 48,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-hatch-east-ready",
+      "prefab": "zero-arena/floor-hatch-v1",
+      "position": [
+        38,
+        0.012,
+        6
+      ],
+      "rotationY": 0,
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "cullDistance": 48,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-core-west",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        -12,
+        0.012,
+        0
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-core-east",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        12,
+        0.012,
+        0
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-north-entry",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        0,
+        0.012,
+        12
+      ],
+      "rotationY": 0,
+      "scale": [
+        1.15,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-south-entry",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        0,
+        0.012,
+        -13
+      ],
+      "rotationY": 0,
+      "scale": [
+        1.15,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-service-west",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        -13,
+        0.012,
+        -33
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1.35,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "floor-drain-service-east",
+      "prefab": "zero-arena/floor-drain-v1",
+      "position": [
+        14,
+        0.012,
+        -34
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        1.35,
+        1,
+        1
+      ],
+      "cullDistance": 52,
+      "colliderRefs": []
+    },
+    {
+      "id": "distant-facility-north-west",
+      "prefab": "zero-arena/distant-facility-v1",
+      "position": [
+        -27,
+        0,
+        66
+      ],
+      "rotationY": 0.12,
+      "scale": [
+        0.85,
+        0.9,
+        0.85
+      ],
+      "cullDistance": 150,
+      "colliderRefs": []
+    },
+    {
+      "id": "distant-facility-north-east",
+      "prefab": "zero-arena/distant-facility-v1",
+      "position": [
+        29,
+        0,
+        69
+      ],
+      "rotationY": -0.18,
+      "scale": [
+        0.72,
+        0.82,
+        0.78
+      ],
+      "cullDistance": 150,
+      "colliderRefs": []
+    },
+    {
+      "id": "distant-facility-south",
+      "prefab": "zero-arena/distant-facility-v1",
+      "position": [
+        -22,
+        0,
+        -69
+      ],
+      "rotationY": 3.141593,
+      "scale": [
+        0.82,
+        0.88,
+        0.9
+      ],
+      "cullDistance": 150,
+      "colliderRefs": []
+    },
+    {
+      "id": "distant-facility-east",
+      "prefab": "zero-arena/distant-facility-v1",
+      "position": [
+        67,
+        0,
+        17
+      ],
+      "rotationY": 1.570796,
+      "scale": [
+        0.7,
+        0.78,
+        0.74
+      ],
+      "cullDistance": 150,
+      "colliderRefs": []
+    }
+  ],
+  "spawnZones": [
+    {
+      "id": "arena-ffa-spawns",
+      "modes": [
+        "FFA",
+        "GUN_GAME"
+      ],
+      "team": "ANY",
+      "clearance": 1,
+      "candidates": [
+        {
+          "position": [
+            -43,
+            0,
+            -11
+          ],
+          "yaw": -1.570796
+        },
+        {
+          "position": [
+            -43,
+            0,
+            11
+          ],
+          "yaw": -1.570796
+        },
+        {
+          "position": [
+            43,
+            0,
+            -13
+          ],
+          "yaw": 1.570796
+        },
+        {
+          "position": [
+            43,
+            0,
+            9
+          ],
+          "yaw": 1.570796
+        },
+        {
+          "position": [
+            -17,
+            0,
+            41
+          ],
+          "yaw": 0
+        },
+        {
+          "position": [
+            17,
+            0,
+            41
+          ],
+          "yaw": 0
+        },
+        {
+          "position": [
+            -20,
+            0,
+            -43
+          ],
+          "yaw": 3.141593
+        },
+        {
+          "position": [
+            20,
+            0,
+            -43
+          ],
+          "yaw": 3.141593
+        }
+      ]
+    }
+  ],
+  "pickups": [
+    {
+      "id": "sniper-01",
+      "weaponId": "sniper",
+      "position": [
+        0,
+        0,
+        12
+      ]
+    },
+    {
+      "id": "ak47-01",
+      "weaponId": "ak47",
+      "position": [
+        -12,
+        0,
+        -24
+      ]
+    },
+    {
+      "id": "glock-01",
+      "weaponId": "glock",
+      "position": [
+        12,
+        0,
+        -26
+      ]
+    },
+    {
+      "id": "night-medkit-01",
+      "itemType": "MEDKIT_SMALL",
+      "position": [
+        -14,
+        0,
+        12
+      ]
+    },
+    {
+      "id": "night-vest-01",
+      "itemType": "ARMOR_VEST",
+      "position": [
+        14,
+        0,
+        12
+      ]
+    },
+    {
+      "id": "night-speed-01",
+      "itemType": "SPEED_BOOST",
+      "position": [
+        0,
+        0,
+        -14
+      ]
+    },
+    {
+      "id": "night-frag-01",
+      "itemType": "THROWABLE_FRAG",
+      "position": [
+        -14,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "night-flash-01",
+      "itemType": "THROWABLE_FLASH",
+      "position": [
+        14,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "night-smoke-01",
+      "itemType": "THROWABLE_SMOKE",
+      "position": [
+        0,
+        0,
+        30
+      ]
+    },
+    {
+      "id": "night-ammo-01",
+      "itemType": "AMMO_BOX",
+      "position": [
+        -27,
+        0,
+        -8
+      ],
+      "respawnMinMs": 8000,
+      "respawnMaxMs": 12000
+    },
+    {
+      "id": "night-ammo-02",
+      "itemType": "AMMO_BOX",
+      "position": [
+        27,
+        0,
+        -8
+      ],
+      "respawnMinMs": 8000,
+      "respawnMaxMs": 12000
+    },
+    {
+      "id": "night-speed-02",
+      "itemType": "SPEED_BOOST",
+      "position": [
+        -24,
+        0,
+        18
+      ]
+    },
+    {
+      "id": "night-medkit-02",
+      "itemType": "MEDKIT_SMALL",
+      "position": [
+        24,
+        0,
+        18
+      ]
+    },
+    {
+      "id": "night-stealth-01",
+      "itemType": "STEALTH_FIELD",
+      "position": [
+        0,
+        0,
+        -30
+      ]
+    }
+  ],
+  "navigationNodes": [
+    {
+      "id": "core-n",
+      "position": [
+        0,
+        0,
+        12
+      ],
+      "links": [
+        "core-ne",
+        "core-nw"
+      ]
+    },
+    {
+      "id": "core-ne",
+      "position": [
+        14,
+        0,
+        12
+      ],
+      "links": [
+        "core-n",
+        "core-e"
+      ]
+    },
+    {
+      "id": "core-e",
+      "position": [
+        14,
+        0,
+        0
+      ],
+      "links": [
+        "core-ne",
+        "core-se"
+      ]
+    },
+    {
+      "id": "core-se",
+      "position": [
+        12,
+        0,
+        -12
+      ],
+      "links": [
+        "core-e",
+        "core-s"
+      ]
+    },
+    {
+      "id": "core-s",
+      "position": [
+        0,
+        0,
+        -14
+      ],
+      "links": [
+        "core-se",
+        "core-sw"
+      ]
+    },
+    {
+      "id": "core-sw",
+      "position": [
+        -12,
+        0,
+        -12
+      ],
+      "links": [
+        "core-s",
+        "core-w"
+      ]
+    },
+    {
+      "id": "core-w",
+      "position": [
+        -14,
+        0,
+        0
+      ],
+      "links": [
+        "core-sw",
+        "core-nw"
+      ]
+    },
+    {
+      "id": "core-nw",
+      "position": [
+        -12,
+        0,
+        12
+      ],
+      "links": [
+        "core-w",
+        "core-n"
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "zero-core",
+      "type": "ZERO_CORE",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "west-ready",
+      "type": "READY_ZONE",
+      "position": [
+        -39,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "east-ready",
+      "type": "READY_ZONE",
+      "position": [
+        39,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": "north-training",
+      "type": "TRAINING_ZONE",
+      "position": [
+        0,
+        0,
+        30
+      ]
+    },
+    {
+      "id": "north-platform",
+      "type": "TRAINING_PLATFORM",
+      "position": [
+        0,
+        2.2,
+        24
+      ]
+    },
+    {
+      "id": "south-maintenance",
+      "type": "MAINTENANCE_ZONE",
+      "position": [
+        0,
+        0,
+        -29
+      ]
+    }
+  ]
+}

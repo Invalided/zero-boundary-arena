@@ -1,0 +1,40 @@
+{
+  "weaponId" : "0ba5663e-db51-4c13-a58f-99c1c93c9550",
+  "weaponCode" : "m4a1.standard",
+  "profile" : "RIFLE_STANDARD",
+  "muzzleProfile" : "RIFLE_M4",
+  "muzzleOverrides" : {
+    "muzzleScale" : {
+      "min" : 0.58,
+      "variance" : 0.34
+    },
+    "muzzleLight" : 4.5,
+    "muzzleLightDistance" : 3.2
+  },
+  "scale" : 0.23,
+  "axisRotation" : [ -0.027729, 1.517206, -0.027729 ],
+  "viewPosition" : [ 0.42, -0.35, -0.42 ],
+  "viewRotation" : [ 0, 0, 0 ],
+  "muzzleBinding" : {
+    "mode" : "NODE",
+    "node" : "Muzzle",
+    "offset" : [ 0, 0, 0 ],
+    "rotationOffset" : [ 0, 0, 0 ]
+  },
+  "pivotPositions" : {
+    "LeftArmPivot" : [ 0, 0, 0 ],
+    "RightArmPivot" : [ 0, 0, 0 ]
+  },
+  "pivotRotations" : {
+    "LeftArmPivot" : [ 0, 0, 0 ],
+    "RightArmPivot" : [ 0, 0, 0 ]
+  },
+  "audio" : {
+    "volume" : 0.95,
+    "scopeVolume" : 2,
+    "cycleVolume" : 1.2,
+    "reloadVolume" : 0.72,
+    "switchVolume" : 1.1,
+    "casingVolume" : 2
+  }
+}

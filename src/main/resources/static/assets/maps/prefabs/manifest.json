@@ -1,0 +1,289 @@
+{
+  "contractVersion": 1,
+  "prefabs": {
+    "zero-arena/core-v1": {
+      "url": "../zero_arena_night/prefabs/arena-core.glb",
+      "node": "ZA_Core_Root"
+    },
+    "zero-arena/training-platform-v1": {
+      "url": "../zero_arena_night/prefabs/training-platform.glb",
+      "node": "ZA_TrainingPlatform_Root"
+    },
+    "zero-arena/training-ramp-v1": {
+      "url": "../zero_arena_night/prefabs/training-ramp.glb",
+      "node": "ZA_TrainingRamp_Root"
+    },
+    "zero-arena/control-console-v1": {
+      "url": "../zero_arena_night/prefabs/control-console.glb",
+      "node": "ZA_ControlConsole_Root"
+    },
+    "zero-arena/ready-screen-v1": {
+      "url": "../zero_arena_night/prefabs/ready-screen.glb",
+      "node": "ZA_ReadyScreen_Root",
+      "variants": {
+        "east-route": {
+          "materials": [
+            {
+              "material": "ZA_MAT_Zero_Cyan_Emissive",
+              "color": "#743f78",
+              "emissive": "#d15acb",
+              "emissiveIntensity": 1.3
+            }
+          ]
+        }
+      }
+    },
+    "zero-arena/ready-terminal-v1": {
+      "url": "../zero_arena_night/prefabs/ready-terminal.glb",
+      "node": "ZA_ReadyTerminal_Root",
+      "variants": {
+        "east-route": {
+          "materials": [
+            {
+              "material": "ZA_MAT_Zero_Cyan_Emissive",
+              "color": "#743f78",
+              "emissive": "#d15acb",
+              "emissiveIntensity": 1.3
+            }
+          ]
+        }
+      }
+    },
+    "zero-arena/low-cover-v1": {
+      "url": "../zero_arena_night/prefabs/low-cover.glb",
+      "node": "ZA_LowCover_Root",
+      "variants": {
+        "outer-cool": {
+          "materials": [
+            { "material": "ZA_MAT_Graphite_Paint", "color": "#263840", "roughness": 0.5 },
+            { "material": "ZA_MAT_Warning_Orange", "color": "#75b8c4", "metalness": 0.24 }
+          ]
+        },
+        "outer-magenta": {
+          "materials": [
+            { "material": "ZA_MAT_Graphite_Paint", "color": "#352d39", "roughness": 0.5 },
+            { "material": "ZA_MAT_Warning_Orange", "color": "#b65d9e", "metalness": 0.2 }
+          ]
+        },
+        "service-warm": {
+          "materials": [
+            { "material": "ZA_MAT_Graphite_Paint", "color": "#3a342d", "roughness": 0.58 },
+            { "material": "ZA_MAT_Warning_Orange", "color": "#d58a36", "metalness": 0.16 }
+          ]
+        }
+      }
+    },
+    "zero-arena/maintenance-unit-v1": {
+      "url": "../zero_arena_night/prefabs/maintenance-unit.glb",
+      "node": "ZA_MaintenanceUnit_Root"
+    },
+    "zero-arena/maintenance-partition-v1": {
+      "url": "../zero_arena_night/prefabs/maintenance-partition.glb",
+      "node": "ZA_MaintenancePartition_Root"
+    },
+    "zero-arena/maintenance-machinery-v1": {
+      "url": "../zero_arena_night/prefabs/maintenance-machinery.glb",
+      "node": "ZA_MaintenanceMachinery_Root"
+    },
+    "zero-arena/service-block-v1": {
+      "url": "../zero_arena_night/prefabs/service-block.glb",
+      "node": "ZA_ServiceBlock_Root"
+    },
+    "zero-arena/core-screen-v1": {
+      "url": "../zero_arena_night/prefabs/core-screen.glb",
+      "node": "ZA_CoreScreen_Root"
+    },
+    "zero-arena/training-cover-v1": {
+      "url": "../zero_arena_night/prefabs/training-cover.glb",
+      "node": "ZA_TrainingCover_Root"
+    },
+    "zero-arena/training-pillar-v1": {
+      "url": "../zero_arena_night/prefabs/training-pillar.glb",
+      "node": "ZA_TrainingPillar_Root"
+    },
+    "zero-arena/training-rear-wall-v1": {
+      "url": "../zero_arena_night/prefabs/training-rear-wall.glb",
+      "node": "ZA_TrainingRearWall_Root"
+    },
+    "zero-arena/spawn-divider-v1": {
+      "url": "../zero_arena_night/prefabs/spawn-divider.glb",
+      "node": "ZA_SpawnDivider_Root"
+    },
+    "zero-arena/zone-marker-c0": {
+      "url": "../zero_arena_night/prefabs/zone-markers.glb",
+      "node": "ZA_ZoneMarker_C0"
+    },
+    "zero-arena/zone-marker-w1": {
+      "url": "../zero_arena_night/prefabs/zone-markers.glb",
+      "node": "ZA_ZoneMarker_W1"
+    },
+    "zero-arena/zone-marker-e1": {
+      "url": "../zero_arena_night/prefabs/zone-markers.glb",
+      "node": "ZA_ZoneMarker_E1"
+    },
+    "zero-arena/zone-marker-n1": {
+      "url": "../zero_arena_night/prefabs/zone-markers.glb",
+      "node": "ZA_ZoneMarker_N1"
+    },
+    "zero-arena/zone-marker-s1": {
+      "url": "../zero_arena_night/prefabs/zone-markers.glb",
+      "node": "ZA_ZoneMarker_S1"
+    },
+    "zero-arena/overhead-light-v1": {
+      "url": "../zero_arena_night/prefabs/overhead-light.glb",
+      "node": "ZA_OverheadLight_Root",
+      "variants": {
+        "cyan": {
+          "materials": [{ "material": "ZA_MAT_Light_Emitter", "color": "#3e858d", "emissive": "#55d9e5", "emissiveIntensity": 1.8 }]
+        },
+        "warm": {
+          "materials": [{ "material": "ZA_MAT_Light_Emitter", "color": "#8a653b", "emissive": "#f0bd82", "emissiveIntensity": 1.7 }]
+        },
+        "magenta": {
+          "materials": [{ "material": "ZA_MAT_Light_Emitter", "color": "#773b70", "emissive": "#d15acb", "emissiveIntensity": 1.55 }]
+        }
+      }
+    },
+    "zero-arena/floor-hatch-v1": {
+      "url": "../zero_arena_night/prefabs/floor-utilities.glb",
+      "node": "ZA_FloorHatch_Root"
+    },
+    "zero-arena/floor-drain-v1": {
+      "url": "../zero_arena_night/prefabs/floor-utilities.glb",
+      "node": "ZA_FloorDrain_Root"
+    },
+    "zero-arena/distant-facility-v1": {
+      "url": "../zero_arena_night/prefabs/distant-facility.glb",
+      "node": "ZA_DistantFacility_Root"
+    },
+    "energy-relay/core-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Core_Root"
+    },
+    "energy-relay/cooler-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Cooler_Root",
+      "variants": {
+        "warm": {
+          "materials": [
+            {
+              "material": "ER_MAT_Cyan_Emissive",
+              "color": "#9e4510",
+              "emissive": "#ff6f16",
+              "emissiveIntensity": 1.8
+            }
+          ]
+        }
+      }
+    },
+    "energy-relay/relay-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Relay_Root"
+    },
+    "energy-relay/equipment-bay-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_EquipmentBay_Root",
+      "variants": {
+        "maintenance": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#18272d", "roughness": 0.6},
+            {"material": "ER_MAT_Panel", "color": "#31505a", "roughness": 0.55},
+            {"material": "ER_MAT_Steel", "color": "#80949a", "metalness": 0.72},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#238fa1", "emissive": "#52d8ee", "emissiveIntensity": 1.9}
+          ]
+        },
+        "capacitor": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#312c25", "roughness": 0.62},
+            {"material": "ER_MAT_Panel", "color": "#6c604b", "roughness": 0.56},
+            {"material": "ER_MAT_Steel", "color": "#9b7447", "metalness": 0.62},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#a34e16", "emissive": "#ff8b2f", "emissiveIntensity": 1.9}
+          ]
+        },
+        "warm": {
+          "materials": [{"material": "ER_MAT_Cyan_Emissive", "color": "#9e4510", "emissive": "#ff6f16", "emissiveIntensity": 1.8}]
+        }
+      }
+    },
+    "energy-relay/service-spine-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_ServiceSpine_Root",
+      "variants": {
+        "maintenance": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#16282e", "roughness": 0.6},
+            {"material": "ER_MAT_Panel", "color": "#2d4d57", "roughness": 0.54},
+            {"material": "ER_MAT_Steel", "color": "#8ba0a5", "metalness": 0.74},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#238fa1", "emissive": "#52d8ee", "emissiveIntensity": 1.9}
+          ]
+        },
+        "capacitor": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#302a22", "roughness": 0.62},
+            {"material": "ER_MAT_Panel", "color": "#66573e", "roughness": 0.55},
+            {"material": "ER_MAT_Steel", "color": "#a27743", "metalness": 0.64},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#a34e16", "emissive": "#ff8b2f", "emissiveIntensity": 1.9}
+          ]
+        },
+        "warm": {
+          "materials": [{"material": "ER_MAT_Cyan_Emissive", "color": "#9e4510", "emissive": "#ff6f16", "emissiveIntensity": 1.8}]
+        }
+      }
+    },
+    "energy-relay/cover-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Cover_Root",
+      "variants": {
+        "warm": {
+          "materials": [{"material": "ER_MAT_Cyan_Emissive", "color": "#9e4510", "emissive": "#ff6f16", "emissiveIntensity": 1.8}]
+        }
+      }
+    },
+    "energy-relay/cargo-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Cargo_Root",
+      "variants": {
+        "transit": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#35322a", "roughness": 0.7},
+            {"material": "ER_MAT_Panel", "color": "#81723f", "roughness": 0.64},
+            {"material": "ER_MAT_Steel", "color": "#a9a18b", "metalness": 0.5},
+            {"material": "ER_MAT_Orange_Emissive", "color": "#b05d18", "emissive": "#ffad36", "emissiveIntensity": 1.75}
+          ]
+        }
+      }
+    },
+    "energy-relay/cabinet-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_Cabinet_Root",
+      "variants": {
+        "relay": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#39484c", "roughness": 0.58},
+            {"material": "ER_MAT_Panel", "color": "#87989a", "roughness": 0.6},
+            {"material": "ER_MAT_Steel", "color": "#c1ced0", "metalness": 0.52},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#4b9da8", "emissive": "#9decf4", "emissiveIntensity": 1.65}
+          ]
+        },
+        "warm": {
+          "materials": [{"material": "ER_MAT_Cyan_Emissive", "color": "#9e4510", "emissive": "#ff6f16", "emissiveIntensity": 1.8}]
+        }
+      }
+    },
+    "energy-relay/transit-console-v1": {
+      "url": "../energy_relay_station_day/prefabs/energy-relay-kit.glb",
+      "node": "ER_TransitConsole_Root",
+      "variants": {
+        "transit": {
+          "materials": [
+            {"material": "ER_MAT_Graphite", "color": "#2d302c", "roughness": 0.66},
+            {"material": "ER_MAT_Panel", "color": "#716538", "roughness": 0.58},
+            {"material": "ER_MAT_Steel", "color": "#a7a18e", "metalness": 0.54},
+            {"material": "ER_MAT_Cyan_Emissive", "color": "#a76516", "emissive": "#ffc14a", "emissiveIntensity": 1.75},
+            {"material": "ER_MAT_Orange_Emissive", "color": "#b05d18", "emissive": "#ff9e2f", "emissiveIntensity": 1.8}
+          ]
+        }
+      }
+    }
+  }
+}

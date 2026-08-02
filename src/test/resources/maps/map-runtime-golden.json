@@ -1,0 +1,12 @@
+{
+  "boxBlocksAtGround": true,
+  "boxAllowsAboveTop": false,
+  "solidPlatformBlocksSide": true,
+  "oneWayPlatformBlocksSide": false,
+  "platformTop": 2,
+  "positiveZRampMiddle": 1,
+  "negativeXRampMiddle": 1,
+  "positiveXRampMiddle": 1,
+  "negativeZRampMiddle": 1,
+  "outsideBoundary": true
+}

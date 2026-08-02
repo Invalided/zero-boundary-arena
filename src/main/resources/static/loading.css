@@ -1,0 +1,63 @@
+.loading-screen {
+  isolation: isolate;
+  opacity: 1;
+  transition: opacity .26s ease;
+  background-color: #050b14;
+  background-image:
+    linear-gradient(180deg, #02070d66 0%, #02070db8 58%, #02070ded 100%),
+    var(--loading-poster, none);
+  background-position: center;
+  background-size: cover;
+  backdrop-filter: none;
+}
+
+.loading-screen.leaving { opacity: 0; }
+
+.loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, #02070d66 0%, transparent 38%, transparent 62%, #02070d66 100%);
+}
+
+.loading-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg,transparent 0 3px,#8cecff09 3px 4px);
+  animation: loadingScan 5s linear infinite;
+}
+
+@keyframes loadingScan { from { background-position-y: 0; } to { background-position-y: 120px; } }
+
+.loading-content {
+  width: min(460px, 82vw);
+  padding-top: 34vh;
+  text-align: center;
+  text-shadow: 0 2px 12px #000;
+  animation: loadingContentIn .42s ease-out both;
+}
+
+.loading-track i { transition: width .08s linear; }
+
+@keyframes loadingContentIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.loading-map-name {
+  color: #f4fbfd;
+  font-size: 38px;
+  font-weight: 800;
+}
+
+.loading-map-description {
+  margin: 5px 0 20px;
+  color: #a9bec6;
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .loading-content { padding-top: 26vh; }
+  .loading-map-name { font-size: 28px; }
+}

@@ -1,0 +1,30 @@
+{
+  "contractVersion": 2,
+  "camera": { "fov": 75, "near": 0.03, "far": 20 },
+  "profiles": {
+    "RIFLE_STANDARD": {
+      "label": "步枪",
+      "safeArea": { "left": 0.02, "top": 0.02, "right": 0.98, "bottom": 0.99 },
+      "forwardToleranceDeg": 0.5,
+      "description": "机匣、弹匣、护木和支撑手保持可见，枪托自然离开屏幕。"
+    },
+    "PISTOL_STANDARD": {
+      "label": "手枪",
+      "safeArea": { "left": 0.02, "top": 0.02, "right": 0.98, "bottom": 0.99 },
+      "forwardToleranceDeg": 0.5,
+      "description": "套筒与照门完整可见，右手从右下进入，换弹操作手保持在安全区内。"
+    },
+    "SNIPER_STANDARD": {
+      "label": "狙击枪",
+      "safeArea": { "left": 0.02, "top": 0.02, "right": 0.98, "bottom": 0.99 },
+      "forwardToleranceDeg": 0.5,
+      "description": "腰射展示机匣和瞄具；开镜由 SightAnchor 与准心严格对齐。"
+    },
+    "GRENADE_STANDARD": {
+      "label": "投掷物",
+      "safeArea": { "left": 0.02, "top": 0.08, "right": 0.98, "bottom": 0.99 },
+      "forwardToleranceDeg": 180,
+      "description": "手雷和操作手保持可见，前臂可在右下边缘自然裁切。"
+    }
+  }
+}

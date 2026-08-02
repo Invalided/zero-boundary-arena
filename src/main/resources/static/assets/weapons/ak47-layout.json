@@ -1,0 +1,41 @@
+{
+  "weaponId" : "1822765d-3952-4ade-b3f0-3e25dfb1bdc2",
+  "weaponCode" : "ak47.standard",
+  "profile" : "RIFLE_STANDARD",
+  "muzzleProfile" : "RIFLE_AK",
+  "muzzleOverrides" : {
+    "muzzleScale" : {
+      "min" : 0.025,
+      "variance" : 0.015
+    },
+    "muzzleLight" : 2,
+    "muzzleLightDistance" : 0.22
+  },
+  "scale" : 0.035,
+  "axisRotation" : [ -2.898244, 1.420444, 3.070327 ],
+  "viewPosition" : [ 0.05068, -0.02072, -0.054419 ],
+  "viewRotation" : [ -0.02137, 0.007353, 0.069742 ],
+  "muzzleBinding" : {
+    "mode" : "VIEW",
+    "position" : [ -0.019262, 0.013134, -0.140821 ],
+    "rotation" : [ 0, 0, 0 ]
+  },
+  "armOffset" : [ 3.827532, 0.039686, -0.040475 ],
+  "armRotation" : [ 0, 0, 0 ],
+  "pivotPositions" : {
+    "LeftArmPivot" : [ -3.46868, -0.21676, 0.02972 ],
+    "RightArmPivot" : [ -3.567796, 0.283869, 0.060235 ]
+  },
+  "pivotRotations" : {
+    "LeftArmPivot" : [ 0, 0, 0 ],
+    "RightArmPivot" : [ 0, 0, 0 ]
+  },
+  "audio" : {
+    "volume" : 0.82,
+    "scopeVolume" : 0.78,
+    "cycleVolume" : 0.58,
+    "reloadVolume" : 0.72,
+    "switchVolume" : 1.1,
+    "casingVolume" : 2
+  }
+}

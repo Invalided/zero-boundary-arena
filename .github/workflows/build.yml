@@ -1,0 +1,47 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Test
+        run: ./mvnw -B clean test
+
+      - name: Build production JAR
+        run: ./mvnw -B -Pproduction package
+
+      - name: Inspect production JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          jar_file="$(find target/production-build -maxdepth 1 -name '*-production.jar' -type f | head -n 1)"
+          test -n "$jar_file"
+          sha256sum "$jar_file"
+
+      - name: Upload verified JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: zero-boundary-arena-${{ github.sha }}
+          path: target/production-build/*-production.jar
+          if-no-files-found: error
+          retention-days: 14

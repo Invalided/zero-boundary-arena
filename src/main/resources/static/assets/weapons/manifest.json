@@ -1,0 +1,657 @@
+{
+    "contractVersion":  4,
+    "muzzleProfiles":  {
+                           "RIFLE_M4":  {
+                                            "coreScale":  [
+                                                              0.26,
+                                                              0.18
+                                                          ],
+                                            "coreColor":  16769418,
+                                            "outerColors":  [
+                                                                16765274,
+                                                                16751154
+                                                            ],
+                                            "lightColor":  16761690,
+                                            "durationMs":  55,
+                                            "sparkCount":  4,
+                                            "smokeCount":  3
+                                        },
+                           "RIFLE_AK":  {
+                                            "coreScale":  [
+                                                              0.26,
+                                                              0.18
+                                                          ],
+                                            "coreColor":  16769418,
+                                            "outerColors":  [
+                                                                16765274,
+                                                                16751154
+                                                            ],
+                                            "lightColor":  16761690,
+                                            "durationMs":  55,
+                                            "sparkCount":  4,
+                                            "smokeCount":  3
+                                        },
+                           "SNIPER_HEAVY":  {
+                                                "coreScale":  [
+                                                                  0.34,
+                                                                  0.24
+                                                              ],
+                                                "coreColor":  16757578,
+                                                "outerColors":  [
+                                                                    16765274,
+                                                                    16751154
+                                                                ],
+                                                "lightColor":  16751414,
+                                                "durationMs":  70,
+                                                "sparkCount":  5,
+                                                "smokeCount":  4
+                                            },
+                           "PISTOL_STANDARD":  {
+                                                   "coreScale":  [
+                                                                     0.26,
+                                                                     0.18
+                                                                 ],
+                                                   "coreColor":  16769418,
+                                                   "outerColors":  [
+                                                                       16765274,
+                                                                       16751154
+                                                                   ],
+                                                   "lightColor":  16761690,
+                                                   "durationMs":  50,
+                                                   "sparkCount":  3,
+                                                   "smokeCount":  2
+                                               }
+                       },
+    "weapons":  {
+                    "m4a1":  {
+                                 "identity":  {
+                                                  "id":  "0ba5663e-db51-4c13-a58f-99c1c93c9550",
+                                                  "code":  "m4a1.standard",
+                                                  "familyCode":  "m4a1",
+                                                  "displayName":  "M4A1"
+                                              },
+                                 "viewModel":  {
+                                                   "enabled":  true,
+                                                   "url":  "assets/weapons/m4a1-viewmodel.glb",
+                                                   "layoutUrl":  "assets/weapons/m4a1-layout.json",
+                                                   "muzzleProfile":  "RIFLE_M4",
+                                                   "animations":  {
+                                                                       "reload":  "Reload"
+                                                                   },
+                                                   "animationTrackIncludes":  {
+                                                                                   "reload":  [
+                                                                                                  "LeftArmPivot",
+                                                                                                  "Magazine"
+                                                                                              ]
+                                                                               },
+                                                   "position":  [
+                                                                    0,
+                                                                    -0.03,
+                                                                    0
+                                                                ],
+                                                   "nodes":  {
+                                                                 "weaponRoot":  "WeaponRoot",
+                                                                 "muzzle":  "Muzzle",
+                                                                 "magazine":  "Magazine",
+                                                                 "bolt":  "Bolt",
+                                                                 "ejectionPort":  "EjectionPort",
+                                                                 "rightHandGrip":  "RightHandGrip",
+                                                                 "leftHandGrip":  "LeftHandGrip",
+                                                                 "scopeMount":  "ScopeMount",
+                                                                 "trigger":  "Trigger"
+                                                             },
+                                                   "directionNodes":  {
+                                                                          "from":  "Bolt",
+                                                                          "to":  "Muzzle"
+                                                                      },
+                                                   "muzzleBinding":  {
+                                                                         "mode":  "NODE",
+                                                                         "node":  "Muzzle",
+                                                                         "offset":  [
+                                                                                        0,
+                                                                                        0,
+                                                                                        0
+                                                                                    ],
+                                                                         "rotationOffset":  [
+                                                                                                0,
+                                                                                                0,
+                                                                                                0
+                                                                                            ]
+                                                                     },
+                                                   "visibilityNodes":  [
+                                                                           "muzzle",
+                                                                           "magazine",
+                                                                           "bolt",
+                                                                           "leftHandGrip"
+                                                                       ],
+                                                   "muzzlePosition":  [
+                                                                          0,
+                                                                          -0.03,
+                                                                          -0.70
+                                                                      ],
+                                                   "effects":  {
+                                                                   "casing":  {
+                                                                                  "radius":  0.012,
+                                                                                  "length":  0.055,
+                                                                                  "color":  14067521,
+                                                                                  "baseVelocity":  [
+                                                                                                       0.75,
+                                                                                                       0.55,
+                                                                                                       0.15
+                                                                                                   ],
+                                                                                  "randomVelocity":  [
+                                                                                                         0.45,
+                                                                                                         0.35,
+                                                                                                         0.25
+                                                                                                     ],
+                                                                                  "gravity":  2.4
+                                                                              }
+                                                               },
+                                                   "equipMotion":  {
+                                                                       "drop":  0.65,
+                                                                       "roll":  0.35
+                                                                   }
+                                               },
+                                 "worldModel":  {
+                                                    "url":  "assets/weapons/m4a1-stylized.glb",
+                                                    "scale":  0.17,
+                                                    "position":  [
+                                                                     0,
+                                                                     0,
+                                                                     0
+                                                                 ],
+                                                    "rotation":  [
+                                                                     0,
+                                                                     1.5707963268,
+                                                                     0
+                                                                 ],
+                                                    "fallback":  {
+                                                                     "length":  1.12,
+                                                                     "color":  3529215,
+                                                                     "magazine":  true
+                                                                 }
+                                                },
+                                 "audio":  {
+                                               "url":  "assets/audio/weapons/m4a1-fire.ogg",
+                                               "frequency":  145,
+                                               "duration":  0.13,
+                                               "filter":  1750,
+                                               "volume":  0.25,
+                                               "pitchRange":  [
+                                                                  0.97,
+                                                                  1.03
+                                                              ],
+                                               "muffled":  true
+                                           },
+                                 "license":  {
+                                                 "name":  "CC0 1.0",
+                                                 "author":  "Quaternius",
+                                                 "source":  "https://quaternius.com/packs/ultimategun.html"
+                                             }
+                             },
+                    "ak47":  {
+                                 "identity":  {
+                                                  "id":  "1822765d-3952-4ade-b3f0-3e25dfb1bdc2",
+                                                  "code":  "ak47.standard",
+                                                  "familyCode":  "ak47",
+                                                  "displayName":  "AK47"
+                                              },
+                                 "viewModel":  {
+                                                   "enabled":  true,
+                                                   "url":  "assets/weapons/ak47-unified-hands-marked.glb",
+                                                   "layoutUrl":  "assets/weapons/ak47-layout.json",
+                                                   "muzzleProfile":  "RIFLE_AK",
+                                                   "scale":  0.23,
+                                                   "position":  [
+                                                                    0,
+                                                                    -0.03,
+                                                                    0
+                                                                ],
+                                                   "rotation":  [
+                                                                    0,
+                                                                    1.5707963268,
+                                                                    0
+                                                                ],
+                                                   "muzzlePosition":  [
+                                                                          -1.56,
+                                                                          0.0,
+                                                                          0.40
+                                                                      ],
+                                                   "muzzleBinding":  {
+                                                                         "mode":  "VIEW",
+                                                                         "position":  [
+                                                                                          -0.019262,
+                                                                                          0.013134,
+                                                                                          -0.140821
+                                                                                      ],
+                                                                         "rotation":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          0
+                                                                                      ]
+                                                                     },
+                                                   "muzzleDirection":  [
+                                                                           1,
+                                                                           0,
+                                                                           0
+                                                                       ],
+                                                   "proceduralFire":  true,
+                                                   "disabledAnimations":  [
+                                                                              "idle",
+                                                                              "reload"
+                                                                          ],
+                                                   "armRoot":  "CommonArmsRoot",
+                                                   "nodes":  {
+                                                                 "weaponRoot":  "AssaultRifle_2",
+                                                                 "muzzle":  "Muzzle"
+                                                             },
+                                                   "viewMotion":  {
+                                                                      "fireImpulseScale":  0.52,
+                                                                      "yawImpulseScale":  0.55,
+                                                                      "maxRecoilImpulse":  0.08,
+                                                                      "recoilPosition":  0.28,
+                                                                      "recoilPitch":  0.58,
+                                                                      "recoilYawPosition":  0.08,
+                                                                      "recoilYaw":  0.32,
+                                                                      "bobAmplitude":  0.0035,
+                                                                      "bobFrequency":  0.0085,
+                                                                      "bobRoll":  0.22,
+                                                                      "reloadRoll":  0.12,
+                                                                      "reloadDrop":  0.035,
+                                                                      "magTravel":  0.08
+                                                                  },
+                                                   "effects":  {
+                                                                   "casing":  {
+                                                                                  "radius":  0.014,
+                                                                                  "length":  0.065,
+                                                                                  "color":  13673025,
+                                                                                  "baseVelocity":  [
+                                                                                                       0.95,
+                                                                                                       0.68,
+                                                                                                       0.18
+                                                                                                   ],
+                                                                                  "randomVelocity":  [
+                                                                                                         0.55,
+                                                                                                         0.40,
+                                                                                                         0.30
+                                                                                                     ],
+                                                                                  "gravity":  2.7
+                                                                              }
+                                                               },
+                                                   "equipMotion":  {
+                                                                       "drop":  0.10,
+                                                                       "roll":  0.08
+                                                                   }
+                                               },
+                                 "worldModel":  {
+                                                    "url":  "assets/weapons/ak47-unified.glb",
+                                                    "scale":  0.18,
+                                                    "position":  [
+                                                                     0,
+                                                                     0,
+                                                                     0
+                                                                 ],
+                                                    "rotation":  [
+                                                                     0,
+                                                                     1.5707963268,
+                                                                     0
+                                                                 ],
+                                                    "fallback":  {
+                                                                     "length":  1.2,
+                                                                     "color":  7947280,
+                                                                     "magazine":  true,
+                                                                     "curvedMagazine":  true
+                                                                 }
+                                                },
+                                 "audio":  {
+                                               "url":  "assets/audio/weapons/ak47-fire.ogg",
+                                               "frequency":  95,
+                                               "duration":  0.2,
+                                               "filter":  1250,
+                                               "volume":  0.82,
+                                               "pitchRange":  [
+                                                                  0.96,
+                                                                  1.04
+                                                              ]
+                                           },
+                                 "license":  {
+                                                 "name":  "CC0 1.0",
+                                                 "author":  "Quaternius",
+                                                 "source":  "https://quaternius.com/packs/ultimategun.html"
+                                             }
+                             },
+                    "sniper":  {
+                                   "identity":  {
+                                                    "id":  "21ed05cf-8e36-4ccb-b23f-1caa6ae38e70",
+                                                    "code":  "awm.standard",
+                                                    "familyCode":  "awm",
+                                                    "displayName":  "AWM"
+                                                },
+                                   "viewModel":  {
+                                                     "enabled":  true,
+                                                     "url":  "assets/weapons/awm-viewmodel.glb",
+                                                     "layoutUrl":  "assets/weapons/awm-layout.json",
+                                                     "muzzleProfile":  "SNIPER_HEAVY",
+                                                     "position":  [
+                                                                      0,
+                                                                      -0.03,
+                                                                      0
+                                                                  ],
+                                                     "proceduralFire":  true,
+                                                     "nodes":  {
+                                                                   "weaponRoot":  "WeaponRoot",
+                                                                   "muzzle":  "Muzzle",
+                                                                   "magazine":  "Magazine",
+                                                                   "bolt":  "Bolt",
+                                                                   "ejectionPort":  "EjectionPort",
+                                                                   "rightHandGrip":  "RightHandGrip",
+                                                                   "leftHandGrip":  "LeftHandGrip",
+                                                                   "scopeMount":  "ScopeMount",
+                                                                   "trigger":  "Trigger"
+                                                               },
+                                                     "directionNodes":  {
+                                                                            "from":  "Bolt",
+                                                                            "to":  "Muzzle"
+                                                                        },
+                                                     "muzzleBinding":  {
+                                                                           "mode":  "NODE",
+                                                                           "node":  "Muzzle",
+                                                                           "offset":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          0
+                                                                                      ],
+                                                                           "rotationOffset":  [
+                                                                                                  0,
+                                                                                                  0,
+                                                                                                  0
+                                                                                              ]
+                                                                       },
+                                                     "visibilityNodes":  [
+                                                                             "muzzle",
+                                                                             "magazine",
+                                                                             "bolt",
+                                                                             "scopeMount",
+                                                                             "rightHandGrip",
+                                                                             "leftHandGrip"
+                                                                         ],
+                                                     "effects":  {
+                                                                     "casing":  {
+                                                                                    "radius":  0.014,
+                                                                                    "length":  0.07,
+                                                                                    "color":  14067521,
+                                                                                    "baseVelocity":  [
+                                                                                                         0.85,
+                                                                                                         0.65,
+                                                                                                         0.20
+                                                                                                     ],
+                                                                                    "randomVelocity":  [
+                                                                                                           0.35,
+                                                                                                           0.30,
+                                                                                                           0.20
+                                                                                                       ],
+                                                                                    "gravity":  2.6
+                                                                                }
+                                                                 },
+                                                     "equipMotion":  {
+                                                                         "drop":  0.9,
+                                                                         "roll":  0.28
+                                                                     }
+                                                 },
+                                   "worldModel":  {
+                                                      "url":  "assets/weapons/awm-worldmodel.glb",
+                                                      "scale":  0.18,
+                                                      "position":  [
+                                                                       0,
+                                                                       0,
+                                                                       0
+                                                                   ],
+                                                      "rotation":  [
+                                                                       0,
+                                                                       1.5707963268,
+                                                                       0
+                                                                   ],
+                                                      "fallback":  {
+                                                                       "length":  1.45,
+                                                                       "color":  7231743,
+                                                                       "scope":  true
+                                                                   }
+                                                  },
+                                   "audio":  {
+                                                 "url":  "assets/audio/weapons/awm-fire.ogg",
+                                                 "frequency":  58,
+                                                 "duration":  0.32,
+                                                 "filter":  820,
+                                                 "volume":  1.0,
+                                                 "pitchRange":  [
+                                                                    0.99,
+                                                                    1.01
+                                                                ]
+                                             },
+                                   "license":  {
+                                                   "name":  "CC0 1.0",
+                                                   "author":  "Quaternius",
+                                                   "source":  "https://quaternius.com/packs/ultimategun.html"
+                                               }
+                               },
+                    "glock":  {
+                                  "identity":  {
+                                                   "id":  "8c0c437f-a7a4-4894-b126-fa2ffc82205c",
+                                                   "code":  "glock.standard",
+                                                   "familyCode":  "glock",
+                                                   "displayName":  "Glock"
+                                               },
+                                  "viewModel":  {
+                                                    "enabled":  true,
+                                                    "url":  "assets/weapons/glock-viewmodel.glb",
+                                                    "layoutUrl":  "assets/weapons/glock-layout.json",
+                                                    "muzzleProfile":  "PISTOL_STANDARD",
+                                                    "position":  [
+                                                                     0,
+                                                                     0,
+                                                                     0
+                                                                 ],
+                                                    "animations":  {
+                                                                       "grip":  "Armature|Grip",
+                                                                       "idle":  "Armature|Idle",
+                                                                       "reload":  "Armature|Reload",
+                                                                       "fire":  "Armature|Shoot"
+                                                                   },
+                                                    "animationTrackIncludes":  {
+                                                                                   "fire":  [
+                                                                                                "Slide",
+                                                                                                "Trigger",
+                                                                                                "Barrel"
+                                                                                            ]
+                                                                               },
+                                                    "layeredFire":  true,
+                                                    "armRoot":  "ArmModel",
+                                                    "materialColors":  {
+                                                                           "Shirt":  397340
+                                                                       },
+                                                    "teamColorMaterials":  [
+                                                                               "Shirt"
+                                                                           ],
+                                                    "nodes":  {
+                                                                  "weaponRoot":  "RootNode",
+                                                                  "muzzle":  "Barrel_end",
+                                                                  "magazine":  "Magazine",
+                                                                  "bolt":  "Slide",
+                                                                  "ejectionPort":  "Slide",
+                                                                  "trigger":  "Trigger",
+                                                                  "rightHandGrip":  "Hand.L",
+                                                                  "leftHandGrip":  "Hand.R.001"
+                                                              },
+                                                    "muzzleBinding":  {
+                                                                          "mode":  "VIEW",
+                                                                          "position":  [
+                                                                                           0.875,
+                                                                                           0.375,
+                                                                                           -1.55
+                                                                                       ],
+                                                                          "rotation":  [
+                                                                                           0,
+                                                                                           0,
+                                                                                           0
+                                                                                       ]
+                                                                      },
+                                                    "muzzleDirection":  [
+                                                                            0,
+                                                                            0,
+                                                                            -1
+                                                                        ],
+                                                    "directionNodes":  {
+                                                                           "from":  "Barrel",
+                                                                           "to":  "Barrel_end"
+                                                                       },
+                                                    "visibilityNodes":  [
+                                                                            "muzzle",
+                                                                            "magazine",
+                                                                            "bolt",
+                                                                            "rightHandGrip"
+                                                                        ],
+                                                    "effects":  {
+                                                                    "casing":  {
+                                                                                   "radius":  0.009,
+                                                                                   "length":  0.038,
+                                                                                   "color":  14067521,
+                                                                                   "baseVelocity":  [
+                                                                                                        0.62,
+                                                                                                        0.58,
+                                                                                                        0.12
+                                                                                                    ],
+                                                                                   "randomVelocity":  [
+                                                                                                          0.34,
+                                                                                                          0.28,
+                                                                                                          0.20
+                                                                                                      ],
+                                                                                   "gravity":  2.4
+                                                                               }
+                                                                },
+                                                    "equipMotion":  {
+                                                                        "drop":  0.45,
+                                                                        "roll":  0.26
+                                                                    }
+                                                },
+                                  "worldModel":  {
+                                                     "url":  "assets/weapons/glock-worldmodel.glb",
+                                                     "scale":  0.18,
+                                                     "position":  [
+                                                                      0,
+                                                                      0,
+                                                                      0
+                                                                  ],
+                                                     "rotation":  [
+                                                                      0,
+                                                                      3.1415926536,
+                                                                      0
+                                                                  ],
+                                                     "fallback":  {
+                                                                      "length":  0.58,
+                                                                      "color":  2304041,
+                                                                      "magazine":  false
+                                                                  }
+                                                 },
+                                  "audio":  {
+                                                "url":  "assets/audio/weapons/glock-fire.ogg",
+                                                "frequency":  185,
+                                                "duration":  0.1,
+                                                "filter":  2100,
+                                                "volume":  0.58,
+                                                "pitchRange":  [
+                                                                   0.98,
+                                                                   1.04
+                                                               ]
+                                            },
+                                  "license":  {
+                                                  "name":  "CC BY 3.0",
+                                                  "author":  "J-Toastie",
+                                                  "source":  "https://poly.pizza/bundle/FPS-pack-QKgLgzmIZ2"
+                                              }
+                              }
+                },
+    "throwables":  {
+                       "frag-grenade":  {
+                                            "identity":  {
+                                                             "id":  "80a22026-86d8-4a48-a9b7-0d9e8b09da53",
+                                                             "code":  "frag-grenade.standard",
+                                                             "familyCode":  "frag-grenade",
+                                                             "displayName":  "閻澧栭幍瀣祫"
+                                                         },
+                                            "viewModel":  {
+                                                              "armsUrl":  "assets/throwables/baked-throwable-arms.glb",
+                                                              "modelUrl":  "assets/throwables/frag-grenade.glb",
+                                                              "variants":  {
+                                                                               "frag_grenade":  {
+                                                                                                    "modelUrl":  "assets/throwables/frag-grenade.glb",
+                                                                                                    "modelNode":  "Grenade",
+                                                                                                    "pinNode":  "Pin",
+                                                                                                    "scaleFactor":  1,
+                                                                                                    "positionOffset":  [
+                                                                                                                           0,
+                                                                                                                           0,
+                                                                                                                           0
+                                                                                                                       ],
+                                                                                                    "rotationOffset":  [
+                                                                                                                           0,
+                                                                                                                           0,
+                                                                                                                           0
+                                                                                                                       ]
+                                                                                                },
+                                                                               "flash_grenade":  {
+                                                                                                     "modelUrl":  "assets/throwables/flash-grenade-m84.glb",
+                                                                                                     "modelNode":  "M84",
+                                                                                                     "scaleFactor":  7.4,
+                                                                                                     "positionOffset":  [
+                                                                                                                            -0.025,
+                                                                                                                            0.035,
+                                                                                                                            0.015
+                                                                                                                        ],
+                                                                                                     "rotationOffset":  [
+                                                                                                                            0,
+                                                                                                                            0,
+                                                                                                                            -0.08
+                                                                                                                        ]
+                                                                                                 },
+                                                                               "smoke_grenade":  {
+                                                                                                     "modelUrl":  "assets/throwables/smoke-grenade-m18.glb",
+                                                                                                     "modelNode":  "M18",
+                                                                                                     "scaleFactor":  7.1,
+                                                                                                     "positionOffset":  [
+                                                                                                                            -0.055,
+                                                                                                                            0.075,
+                                                                                                                            0.025
+                                                                                                                        ],
+                                                                                                     "rotationOffset":  [
+                                                                                                                            0.04,
+                                                                                                                            0,
+                                                                                                                            -0.14
+                                                                                                                        ]
+                                                                                                 }
+                                                                           },
+                                                              "layoutUrl":  "assets/weapons/grenade-layout.json",
+                                                              "hiddenNodes":  [
+
+                                                                              ],
+                                                              "materialColors":  {
+
+                                                                                 },
+                                                              "armRoot":  "Scene",
+                                                              "armRig":  "STATIC_PIVOTS",
+                                                              "modelAttachmentNode":  "RightHandMount",
+                                                              "modelRoot":  "RootNode",
+                                                              "nodes":  {
+                                                                            "grenade":  "Grenade",
+                                                                            "pin":  "Pin",
+                                                                            "leftArm":  "LeftArmPivot",
+                                                                            "rightArm":  "RightArmPivot"
+                                                                        }
+                                                          },
+                                            "license":  {
+                                                            "name":  "CC BY 4.0",
+                                                            "author":  "DJMaesen",
+                                                            "source":  "https://sketchfab.com/3d-models/fp-arms-06ee1407117d4e5ab343becb4ee44bb6"
+                                                        }
+                                        }
+                   }
+}

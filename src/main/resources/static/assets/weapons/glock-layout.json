@@ -1,0 +1,13 @@
+{
+  "weaponId": "8c0c437f-a7a4-4894-b126-fa2ffc82205c",
+  "weaponCode": "glock.standard",
+  "audio": { "volume": 0.58, "scopeVolume": 1.21, "cycleVolume": 0.90, "reloadVolume": 1.12, "switchVolume": 1.10, "casingVolume": 0.47 },
+  "muzzleProfile": "PISTOL_STANDARD",
+  "muzzleOverrides": { "muzzleScale": { "min": 0.64, "variance": 0.24 }, "muzzleLight": 3.6, "muzzleLightDistance": 0.42 },
+  "profile": "PISTOL_STANDARD",
+  "scale": 0.23,
+  "axisRotation": [0.009431759, 1.569318207, 0.009431759],
+  "viewPosition": [-0.110867, -0.712563, -1.198039],
+  "viewRotation": [0.0, 0.0, 0.0]
+  ,"muzzleBinding": {"mode":"VIEW","position":[0.875,0.375,-1.55],"rotation":[0,0,0]}
+}

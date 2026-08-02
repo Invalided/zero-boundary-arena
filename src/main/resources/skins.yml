@@ -1,0 +1,46 @@
+skins:
+  4fd1342d-38d7-43aa-a359-69efa825c99b:
+    code: m4a1.default
+    displayName: M4A1 Standard
+    weaponIds: [m4a1]
+    familyCodes: []
+    materialVariant: DEFAULT
+    muzzleProfile: RIFLE_M4
+    grantedByDefault: true
+    defaultForCompatibleWeapon: true
+  055f8b21-3728-444b-a6f8-2e000f383103:
+    code: ak47.default
+    displayName: AK47 Standard
+    weaponIds: [ak47]
+    familyCodes: []
+    materialVariant: DEFAULT
+    muzzleProfile: RIFLE_AK
+    grantedByDefault: true
+    defaultForCompatibleWeapon: true
+  f9f1cd75-3677-45f4-a4ca-949f50df5012:
+    code: awm.default
+    displayName: AWM Standard
+    weaponIds: [sniper]
+    familyCodes: []
+    materialVariant: DEFAULT
+    muzzleProfile: SNIPER_HEAVY
+    grantedByDefault: true
+    defaultForCompatibleWeapon: true
+  838611bb-cbc1-475f-9dc8-f2bb7af43815:
+    code: glock.default
+    displayName: Glock Standard
+    weaponIds: [glock]
+    familyCodes: []
+    materialVariant: DEFAULT
+    muzzleProfile: PISTOL_STANDARD
+    grantedByDefault: true
+    defaultForCompatibleWeapon: true
+  a185a7c1-f7c4-414f-841b-59be27ac26d5:
+    code: ak47.ember-test
+    displayName: AK47 Ember Test
+    weaponIds: [ak47]
+    familyCodes: []
+    materialVariant: EMBER_TEST
+    muzzleProfile: RIFLE_AK
+    grantedByDefault: true
+    defaultForCompatibleWeapon: false

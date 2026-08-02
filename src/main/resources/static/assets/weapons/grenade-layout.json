@@ -1,0 +1,40 @@
+{
+  "throwableId" : "80a22026-86d8-4a48-a9b7-0d9e8b09da53",
+  "throwableCode" : "frag-grenade.standard",
+  "profile" : "GRENADE_STANDARD",
+  "scale" : 0.72,
+  "axisRotation" : [ 1.570796, 0, 0 ],
+  "viewPosition" : [ 0.034028, -0.184668, -0.215492 ],
+  "viewRotation" : [ 0.060266, 0.05111, 0.091619 ],
+  "armOffset" : [ 0, 0, 0 ],
+  "armRotation" : [ -1.570796, 0, 0 ],
+  "modelPosition" : [ -0.068088, -0.109422, -0.123794 ],
+  "modelRotation" : [ -0.270257, 0.355826, 0.095165 ],
+  "modelScale" : 0.18,
+  "pinPullOffset" : [ 0, 0.03, -0.08 ],
+  "pivotPositions" : {
+    "LeftArmPivot" : [ -0.24, 0, 0.04 ],
+    "RightArmPivot" : [ 0.22, 0, 0 ]
+  },
+  "pivotRotations" : {
+    "LeftArmPivot" : [ 0, 0, 0 ],
+    "RightArmPivot" : [ 0, 0, 0 ]
+  },
+  "variantLayouts" : {
+    "frag_grenade" : {
+      "modelPosition" : [ -0.068088, -0.109422, -0.123794 ],
+      "modelRotation" : [ -0.270257, 0.355826, 0.095165 ],
+      "modelScale" : 0.18
+    },
+    "smoke_grenade" : {
+      "modelPosition" : [ -0.0673, 0.138592, 0.113749 ],
+      "modelRotation" : [ 0, 0, 0 ],
+      "modelScale" : 0.455
+    },
+    "flash_grenade" : {
+      "modelPosition" : [ -0.179085, 0.23687, 0.325135 ],
+      "modelRotation" : [ 0, 0, 0 ],
+      "modelScale" : 0.265
+    }
+  }
+}

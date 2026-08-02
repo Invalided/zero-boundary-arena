@@ -1,0 +1,13 @@
+@media (max-width:700px){
+  .weapon{right:8px;bottom:8px;width:208px}
+  .current-weapon{grid-template-columns:68px 1fr auto;min-height:51px;padding-inline:4px}
+  .current-weapon>img{width:68px;height:40px}
+  .current-weapon-copy small{font-size:7px}
+  .current-weapon-copy b{font-size:11px}
+  .current-weapon strong{gap:3px;font-size:18px}
+  .current-weapon strong i{font-size:9px}
+  .weapon-slot{grid-template-rows:25px 12px;height:42px}
+  .weapon-slot img{height:25px}
+  .weapon-slot span{font-size:7px}
+  .weapon-slot kbd{left:2px;top:2px}
+}

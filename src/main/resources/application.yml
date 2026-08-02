@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  compression:
+    enabled: true
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  application:
+    name: neon-arena
+game:
+  mode: FFA_ARENA
+  default-room: polygon-arena
+  capacity:
+    players-per-room: 12
+    spectators-per-room: 4
+    max-connections: 128
+  map-resource: /static/maps/polygon-arena.json
+  netty:
+    enabled: true
+    host: 0.0.0.0
+    port: 8081
+  match:
+    min-players: 1
+    warmup-seconds: 10
+    duration-seconds: 300
+    score-limit: 20
+    finished-seconds: 10
+  bots:
+    enabled: true
+    minimum-combatants: 3
+    reaction-ms: 2600
+    shot-interval-min-ms: 620
+    shot-interval-max-ms: 880
+    aim-error-degrees: 4.2
+    movement-scale: 0.82
+    safe-spawn-distance: 20
+    spawn-candidate-count: 24
+    spawn-hold-ms: 1500
