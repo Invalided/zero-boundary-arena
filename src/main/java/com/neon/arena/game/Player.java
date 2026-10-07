@@ -31,6 +31,43 @@ public class Player {
   public boolean spawnBuffSelected;
   public WeaponAction weaponAction=WeaponAction.READY;
   public PlayerInput input=PlayerInput.idle();
+  /**
+   * 客户端输入队列。客户端每条输入代表一个固定 50ms 步长，并在对账时逐条重放；
+   * 服务端也必须逐条模拟，不能"只取最新一条"，否则网络抖动时会丢步或重复步，
+   * 造成预测分叉和走路发黏。
+   */
+  public final ArrayDeque<PlayerInput> inputQueue=new ArrayDeque<>();
+  /** 已接收的最大输入序号（单调递增，不随复活重置），用于丢弃乱序/重放输入。 */
+  public long lastReceivedInput;
+  /**
+   * 输入额度：每 Tick +1，上限 MAX_INPUT_CREDIT。抖动后允许一个 Tick 补跑最多 3 条积压输入，
+   * 但长期模拟速率不会超过 Tick 率，改脚本狂发输入也无法加速。
+   */
+  public int inputCredit;
+  /** 连续没有可用输入的 Tick 数，超过阈值才按静止输入模拟（如浏览器切后台）。 */
+  public int starvedTicks;
+  public static final int MAX_QUEUED_INPUTS=8, MAX_INPUT_CREDIT=3;
+
+  /** 入队一条客户端输入；序号不大于已接收序号时丢弃并返回 false。队列过长时丢弃最旧的。 */
+  public boolean enqueueInput(PlayerInput next){
+    if(next.sequence()<=lastReceivedInput)return false;
+    lastReceivedInput=next.sequence();
+    inputQueue.addLast(next);
+    while(inputQueue.size()>MAX_QUEUED_INPUTS)inputQueue.pollFirst();
+    return true;
+  }
+
+  /** 取出本 Tick 要模拟的输入（按序号顺序），数量受输入额度限制。 */
+  public List<PlayerInput> takeInputsForTick(){
+    inputCredit=Math.min(MAX_INPUT_CREDIT,inputCredit+1);
+    if(inputQueue.isEmpty())return List.of();
+    List<PlayerInput> batch=new ArrayList<>(Math.min(inputCredit,inputQueue.size()));
+    while(inputCredit>0&&!inputQueue.isEmpty()){batch.add(inputQueue.pollFirst());inputCredit--;}
+    return batch;
+  }
+
+  /** 复活、离开、冻结时清空积压输入，避免旧意图在新状态下继续执行。 */
+  public void clearInputs(){inputQueue.clear();inputCredit=0;starvedTicks=0;}
   public String currentWeapon;
   public final Map<String,PlayerWeaponState> weaponStates=new LinkedHashMap<>();
   public final Map<WeaponSlot,String> equippedSlots=new EnumMap<>(WeaponSlot.class);
@@ -46,7 +83,7 @@ public class Player {
    * 新局准备和普通阵亡复活都使用统一的 10 秒选择窗口；选择窗口同时就是服务端
    * 无敌窗口，不能只延长前端卡片，否则会出现玩家还在菜单里却已经受到伤害。
    */
-  public void respawn(double[] spawn,boolean roundOpening){if(spawn==null||spawn.length<2)throw new IllegalArgumentException("spawn requires x and z");long now=System.currentTimeMillis();long selectionMs=10_000;x=spawn[0];z=spawn[1];if(spawn.length>=3)yaw=spawn[2];pitch=0;y=MapRuntime.EYE_HEIGHT;hp=100;armor=50;resetThrowables();alive=true;respawnAvailableAt=0;lastShot=0;reloadUntil=0;verticalVelocity=0;onGround=true;jumpQueued=false;scoped=false;holdingThrowable=false;scopedAt=0;input=PlayerInput.idle(yaw,pitch);invulnerableUntil=now+selectionMs;spawnBuff=SpawnBuff.NONE;spawnBuffUntil=0;spawnBuffSelectionUntil=invulnerableUntil;spawnBuffSelected=false;jammedUntil=0;blindedUntil=0;speedBoostUntil=0;invisibleUntil=0;weaponAction=WeaponAction.READY;weaponActionStartedAt=weaponActionUntil=weaponActionCommitAt=0;weaponActionCommitted=false;pendingGrenadeYaw=pendingGrenadePitch=0;pendingThrowable=selectedThrowable;}
+  public void respawn(double[] spawn,boolean roundOpening){if(spawn==null||spawn.length<2)throw new IllegalArgumentException("spawn requires x and z");long now=System.currentTimeMillis();long selectionMs=10_000;x=spawn[0];z=spawn[1];if(spawn.length>=3)yaw=spawn[2];pitch=0;y=MapRuntime.EYE_HEIGHT;hp=100;armor=50;resetThrowables();alive=true;respawnAvailableAt=0;lastShot=0;reloadUntil=0;verticalVelocity=0;onGround=true;jumpQueued=false;scoped=false;holdingThrowable=false;scopedAt=0;input=PlayerInput.idle(yaw,pitch);clearInputs();invulnerableUntil=now+selectionMs;spawnBuff=SpawnBuff.NONE;spawnBuffUntil=0;spawnBuffSelectionUntil=invulnerableUntil;spawnBuffSelected=false;jammedUntil=0;blindedUntil=0;speedBoostUntil=0;invisibleUntil=0;weaponAction=WeaponAction.READY;weaponActionStartedAt=weaponActionUntil=weaponActionCommitAt=0;weaponActionCommitted=false;pendingGrenadeYaw=pendingGrenadePitch=0;pendingThrowable=selectedThrowable;}
   public void resetThrowables(){throwableInventory.clear();for(ThrowableType type:ThrowableType.values())throwableInventory.put(type,1);selectedThrowable=ThrowableType.FRAG;}
   public int throwableCount(ThrowableType type){return throwableInventory.getOrDefault(type,0);}
   public boolean consumeThrowable(ThrowableType type){int count=throwableCount(type);if(count<=0)return false;throwableInventory.put(type,count-1);selectedThrowable=type;return true;}
