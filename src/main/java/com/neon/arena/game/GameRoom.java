@@ -483,6 +483,7 @@ public class GameRoom {
         player.joined = false;
         player.scoped = false;
         player.input = PlayerInput.idle();
+        player.clearInputs();
         player.kills = 0;
         player.deaths = 0;
         player.spectator = false;
@@ -497,47 +498,82 @@ public class GameRoom {
     private void input(Player p, JsonNode message) {
         if (!matchController.movementEnabled() || !p.alive || !p.joined || p.spectator) return;
         long sequence = message.path("sequence").asLong();
-        if (sequence <= p.input.sequence()) return;
+        double yaw = message.path("yaw").asDouble(), pitch = message.path("pitch").asDouble();
+        if (!Double.isFinite(yaw) || !Double.isFinite(pitch)) return;
         double forward = clamp(message.path("forward").asDouble(), -1, 1);
         double right = clamp(message.path("right").asDouble(), -1, 1);
-        p.input = new PlayerInput(sequence, forward, right, message.path("sprint").asBoolean(),
-            message.path("yaw").asDouble(), clamp(message.path("pitch").asDouble(), -1.45, 1.45));
-        if (message.path("jump").asBoolean()) p.jumpQueued = true;
+        PlayerInput next = new PlayerInput(sequence, forward, right, message.path("sprint").asBoolean(),
+            yaw, clamp(pitch, -1.45, 1.45), message.path("jump").asBoolean());
+        if (!p.enqueueInput(next)) return;
+        // 视角是即时意图，不必等物理步：射击方向校验和对外快照都使用最新收到的视角，
+        // 这样快速甩枪时 shoot() 的方向校验不会拿几十毫秒前的旧视角去比较。
+        p.yaw = next.yaw();
+        p.pitch = next.pitch();
     }
 
     /**
      * 服务端权威移动：根据最新输入、固定时间步长和服务端地图计算位置。
      * X/Z 分轴检测允许玩家贴墙滑动；跳跃使用垂直速度和重力模拟。
      */
+    private static final int STARVATION_TICKS = 10;
+
     private void updateMovement() {
         double dt = TICK_MS / 1000.0;
         for (Player p : players.values()) {
             if (!p.joined || !p.alive || p.spectator) continue;
-            PlayerInput input = p.input;
-            p.yaw = input.yaw();
-            p.pitch = input.pitch();
-            double forward = input.forward(), right = input.right();
-            double length = Math.hypot(forward, right);
-            if (length > 1) { forward /= length; right /= length; }
-            WeaponDefinition heldWeapon=weaponRegistry.require(p.currentWeapon);
-            double equipmentMultiplier=p.holdingThrowable?1.06:heldWeapon.movementMultiplier();
-            double speed = (input.sprint() ? 9 : 6)*equipmentMultiplier;
-            if (p.hasActiveSpawnBuff(System.currentTimeMillis()) && p.spawnBuff == SpawnBuff.FEARLESS) speed *= 1.25;
-            if(System.currentTimeMillis()<p.speedBoostUntil)speed*=1.20;
-            double dx = (-Math.sin(p.yaw) * forward + Math.cos(p.yaw) * right) * speed * dt;
-            double dz = (-Math.cos(p.yaw) * forward - Math.sin(p.yaw) * right) * speed * dt;
-            moveHorizontalAxis(p, p.x + dx, p.z, true);
-            moveHorizontalAxis(p, p.x, p.z + dz, false);
-            if (p.jumpQueued && p.onGround) { p.verticalVelocity = System.currentTimeMillis()<p.speedBoostUntil?11.25:8; p.onGround = false; }
-            p.jumpQueued = false;
-            p.verticalVelocity -= 20 * dt;
-            MapRuntime.VerticalMove vertical = mapRuntime.resolveVertical(
-                p.x, p.z, p.y, p.verticalVelocity, dt);
-            p.y = vertical.eyeY();
-            p.verticalVelocity = vertical.verticalVelocity();
-            p.onGround = vertical.onGround();
-            p.lastProcessedInput = input.sequence();
+            if (p.bot) {
+                // 机器人在房间线程内直接产生输入，每 Tick 恰好一条，沿用原路径。
+                p.yaw = p.input.yaw();
+                p.pitch = p.input.pitch();
+                boolean jump = p.jumpQueued;
+                p.jumpQueued = false;
+                stepMovement(p, p.input, jump, dt);
+                p.lastProcessedInput = p.input.sequence();
+                continue;
+            }
+            List<PlayerInput> batch = p.takeInputsForTick();
+            if (batch.isEmpty()) {
+                // 输入暂时没到（网络抖动）：先不推进这名玩家，等输入到达后补跑，
+                // 保证服务端和客户端按同一串输入、同一步长模拟。长时间断流才按静止处理重力。
+                if (++p.starvedTicks > STARVATION_TICKS)
+                    stepMovement(p, PlayerInput.idle(p.yaw, p.pitch), false, dt);
+                continue;
+            }
+            p.starvedTicks = 0;
+            for (PlayerInput input : batch) {
+                p.input = input;
+                stepMovement(p, input, input.jump(), dt);
+                p.lastProcessedInput = input.sequence();
+            }
         }
+    }
+
+    /**
+     * 单步移动：根据一条输入、固定时间步长和服务端地图计算位置。
+     * 与客户端 simulateMovement 一一对应，移动方向使用该条输入自身的 yaw。
+     */
+    private void stepMovement(Player p, PlayerInput input, boolean jump, double dt) {
+        double forward = input.forward(), right = input.right();
+        double length = Math.hypot(forward, right);
+        if (length > 1) { forward /= length; right /= length; }
+        WeaponDefinition heldWeapon=weaponRegistry.require(p.currentWeapon);
+        double equipmentMultiplier=p.holdingThrowable?1.06:heldWeapon.movementMultiplier();
+        double speed = (input.sprint() ? 9 : 6)*equipmentMultiplier;
+        long now = System.currentTimeMillis();
+        if (p.hasActiveSpawnBuff(now) && p.spawnBuff == SpawnBuff.FEARLESS) speed *= 1.25;
+        if(now<p.speedBoostUntil)speed*=1.20;
+        double yaw = input.yaw();
+        double dx = (-Math.sin(yaw) * forward + Math.cos(yaw) * right) * speed * dt;
+        double dz = (-Math.cos(yaw) * forward - Math.sin(yaw) * right) * speed * dt;
+        moveHorizontalAxis(p, p.x + dx, p.z, true);
+        moveHorizontalAxis(p, p.x, p.z + dz, false);
+        if (jump && p.onGround) { p.verticalVelocity = now<p.speedBoostUntil?11.25:8; p.onGround = false; }
+        p.verticalVelocity -= 20 * dt;
+        MapRuntime.VerticalMove vertical = mapRuntime.resolveVertical(
+            p.x, p.z, p.y, p.verticalVelocity, dt);
+        p.y = vertical.eyeY();
+        p.verticalVelocity = vertical.verticalVelocity();
+        p.onGround = vertical.onGround();
     }
 
     /**
@@ -1182,7 +1218,7 @@ public class GameRoom {
     private void freezeCombatants(){
         grenades.clear();
         smokes.clear();
-        players.values().forEach(player->{player.input=PlayerInput.idle(player.yaw,player.pitch);player.jumpQueued=false;player.scoped=false;});
+        players.values().forEach(player->{player.input=PlayerInput.idle(player.yaw,player.pitch);player.clearInputs();player.jumpQueued=false;player.scoped=false;});
     }
 
     private void broadcastMatchResult(MatchController.FinishReason reason){
