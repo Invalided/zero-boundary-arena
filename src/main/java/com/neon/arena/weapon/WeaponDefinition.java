@@ -36,6 +36,8 @@ public record WeaponDefinition(
     double hitMultiplier=headshot?headMultiplier:1;
     return Math.max(1,(int)Math.round(baseDamage*distanceMultiplier(distance)*hitMultiplier));
   }
+  /** 近战武器不消耗弹药、不产生弹道，由服务端按扇形范围判定命中。 */
+  public boolean melee(){return category==WeaponCategory.MELEE;}
   public boolean supportsScope(){return category==WeaponCategory.SNIPER_RIFLE;}
   public boolean automatic(){return fireMode==WeaponFireMode.FULL_AUTO||fireMode==WeaponFireMode.BURST;}
 }

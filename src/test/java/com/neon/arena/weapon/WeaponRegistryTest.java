@@ -19,7 +19,7 @@ class WeaponRegistryTest {
     assertEquals("m4a1.standard",m4.code());
     assertEquals("m4a1",m4.familyCode());
     assertEquals(90,m4.reserveAmmo());
-    assertTrue(registry.values().stream().allMatch(weapon->weapon.reserveAmmo()>0));
+    assertTrue(registry.values().stream().filter(weapon->!weapon.melee()).allMatch(weapon->weapon.reserveAmmo()>0));
     assertEquals(.10,m4.armorPenetration(),.0001);
     assertEquals(.96,m4.movementMultiplier(),.0001);
     assertTrue(registry.require("sniper").movementMultiplier()<registry.require("glock").movementMultiplier());
@@ -35,5 +35,15 @@ class WeaponRegistryTest {
     assertFalse(registry.require("sniper").retainScopeAfterShot());
     assertTrue(catalog.findValues("retainScopeAfterShot").stream().allMatch(value->!value.asBoolean()));
     assertEquals(WeaponSlot.SECONDARY,registry.require("glock").slot());
+  }
+
+  @Test
+  void knifeIsAMeleeSlotWeaponWithoutAmmoEconomy() {
+    WeaponDefinition knife=new WeaponRegistry().require("knife");
+    assertTrue(knife.melee());
+    assertEquals(WeaponSlot.MELEE,knife.slot());
+    assertEquals(40,knife.damage(1.2,false));
+    assertEquals(40,knife.damage(1.2,true));
+    assertTrue(knife.maxRange()<=2.5);
   }
 }
