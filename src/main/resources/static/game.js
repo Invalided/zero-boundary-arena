@@ -214,6 +214,24 @@
    * 不会出现玩家穿过模型或被看不见的远距离碰撞挡住。后续 Blender 资产只需替换这里的外观。
    */
   const energyRelayFallbacks={core:[],coolers:[],relay:[],accents:[]};
+  /**
+   * three.js r128 的 InstancedMesh 用共享几何体（单个实例、原点附近）的包围球做视锥裁剪，
+   * 摄像机一转，整批建筑会被误剔除再突然出现。这里为每个批次建一个共享顶点数据的轻量几何体，
+   * 把包围球扩到覆盖全部实例；射线检测时临时换回单实例包围球，保证命中判定不变。
+   */
+  const _fitBox=new THREE.Box3(),_fitSphere=new THREE.Sphere(),_fitMatrix=new THREE.Matrix4();
+  function fitInstancedBounds(batch){
+    const base=batch.geometry;if(!base.boundingSphere)base.computeBoundingSphere();
+    const geometry=new THREE.BufferGeometry();geometry.index=base.index;
+    for(const name in base.attributes)geometry.attributes[name]=base.attributes[name];
+    geometry.groups=base.groups;geometry.drawRange=base.drawRange;
+    _fitBox.makeEmpty();
+    for(let index=0;index<batch.count;index++){batch.getMatrixAt(index,_fitMatrix);_fitSphere.copy(base.boundingSphere).applyMatrix4(_fitMatrix);_fitBox.expandByPoint(_fitSphere.center.clone().addScalar(_fitSphere.radius));_fitBox.expandByPoint(_fitSphere.center.clone().addScalar(-_fitSphere.radius));}
+    const fitted=new THREE.Sphere();if(_fitBox.isEmpty())fitted.copy(base.boundingSphere);else _fitBox.getBoundingSphere(fitted);
+    const instanceSphere=base.boundingSphere.clone();geometry.boundingSphere=fitted;batch.geometry=geometry;
+    const raycast=batch.raycast;batch.raycast=function(raycaster,intersects){geometry.boundingSphere=instanceSphere;try{raycast.call(this,raycaster,intersects);}finally{geometry.boundingSphere=fitted;}};
+    return batch;
+  }
   function createEnergyRelayStationVisuals(){
     if(MAP.environment?.theme!=='energy_relay_station_day')return;
     const graphite=new THREE.MeshStandardMaterial({color:0x263238,metalness:.72,roughness:.34});
@@ -224,7 +242,7 @@
     const add=(parent,geometry,material,position,rotation)=>{const value=new THREE.Mesh(geometry,material);value.position.fromArray(position);if(rotation)value.rotation.set(...rotation);value.castShadow=quality.shadows;value.receiveShadow=true;parent.add(value);return value;};
     // 相同设备模块必须走 InstancedMesh。丰富地图不能线性增加 Draw Call，否则低端浏览器会先失去帧率。
     const dummy=new THREE.Object3D();
-    const addInstances=(parent,geometry,material,transforms)=>{const batch=new THREE.InstancedMesh(geometry,material,transforms.length);transforms.forEach((transform,index)=>{dummy.position.fromArray(transform.position);dummy.rotation.set(...(transform.rotation||[0,0,0]));dummy.scale.fromArray(transform.scale||[1,1,1]);dummy.updateMatrix();batch.setMatrixAt(index,dummy.matrix);});batch.instanceMatrix.needsUpdate=true;batch.castShadow=quality.shadows;batch.receiveShadow=true;parent.add(batch);return batch;};
+    const addInstances=(parent,geometry,material,transforms)=>{const batch=new THREE.InstancedMesh(geometry,material,transforms.length);transforms.forEach((transform,index)=>{dummy.position.fromArray(transform.position);dummy.rotation.set(...(transform.rotation||[0,0,0]));dummy.scale.fromArray(transform.scale||[1,1,1]);dummy.updateMatrix();batch.setMatrixAt(index,dummy.matrix);});batch.instanceMatrix.needsUpdate=true;fitInstancedBounds(batch);batch.castShadow=quality.shadows;batch.receiveShadow=true;parent.add(batch);return batch;};
     const hideCollider=id=>{const graybox=obstacleMeshesByColliderId.get(id);if(graybox)graybox.visible=false;};
 
     const core=new THREE.Group();core.name='EnergyRelayCore';
@@ -345,7 +363,7 @@
   const concreteMaterial=new THREE.MeshStandardMaterial({color:0xffffff,map:concreteWallTexture(),roughness:.93,metalness:.02});
   const wallGeometry=new THREE.BoxGeometry(1,1,1),wallDummy=new THREE.Object3D(),concreteIndices=new Set(boundaryWall.concreteSegments||[]);
   const wallTransforms=boundarySegments.map(([a,b],index)=>{const dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz),angle=-Math.atan2(dz,dx);return {index,length,angle,x:(a[0]+b[0])/2,z:(a[1]+b[1])/2};});
-  function addWallBatch(transforms,material,scaleFor){if(!transforms.length)return null;const batch=new THREE.InstancedMesh(wallGeometry,material,transforms.length);transforms.forEach((value,index)=>{wallDummy.position.set(value.x,value.y??boundaryWall.height/2,value.z);wallDummy.rotation.set(0,value.angle,0);wallDummy.scale.fromArray(scaleFor(value));wallDummy.updateMatrix();batch.setMatrixAt(index,wallDummy.matrix);});batch.instanceMatrix.needsUpdate=true;batch.receiveShadow=true;scene.add(batch);return batch;}
+  function addWallBatch(transforms,material,scaleFor){if(!transforms.length)return null;const batch=new THREE.InstancedMesh(wallGeometry,material,transforms.length);transforms.forEach((value,index)=>{wallDummy.position.set(value.x,value.y??boundaryWall.height/2,value.z);wallDummy.rotation.set(0,value.angle,0);wallDummy.scale.fromArray(scaleFor(value));wallDummy.updateMatrix();batch.setMatrixAt(index,wallDummy.matrix);});batch.instanceMatrix.needsUpdate=true;fitInstancedBounds(batch);batch.receiveShadow=true;scene.add(batch);return batch;}
   addWallBatch(wallTransforms.filter(value=>!concreteIndices.has(value.index)),wallMaterial,value=>[value.length,boundaryWall.height,boundaryWall.thickness]);
   const concreteWalls=wallTransforms.filter(value=>concreteIndices.has(value.index));
   addWallBatch(concreteWalls,concreteMaterial,value=>[value.length,boundaryWall.height,boundaryWall.thickness]);
@@ -388,14 +406,14 @@
     edgeIndices.forEach(edgeIndex=>{const [a,b]=boundarySegments[edgeIndex],dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz),angle=-Math.atan2(dz,dx),inwardX=Math.sin(angle),inwardZ=Math.cos(angle);heights.forEach(height=>transforms.push({a,b,dx,dz,length,inwardX,inwardZ,height}));});
     const batch=new THREE.InstancedMesh(geometry,material,transforms.length),dummy=new THREE.Object3D(),up=new THREE.Vector3(0,1,0);
     transforms.forEach((value,index)=>{const inset=boundaryWall.thickness/2+.16;dummy.position.set((value.a[0]+value.b[0])/2+value.inwardX*inset,value.height,(value.a[1]+value.b[1])/2+value.inwardZ*inset);dummy.quaternion.setFromUnitVectors(up,new THREE.Vector3(value.dx,0,value.dz).normalize());dummy.scale.set(1,Math.max(1,value.length-2.2),1);dummy.updateMatrix();batch.setMatrixAt(index,dummy.matrix);});
-    batch.instanceMatrix.needsUpdate=true;scene.add(batch);return batch;
+    batch.instanceMatrix.needsUpdate=true;fitInstancedBounds(batch);scene.add(batch);return batch;
   }
   if(MAP.environment?.theme==='energy_relay_station_day'){
     const coldPipe=new THREE.MeshStandardMaterial({color:0x82959c,metalness:.82,roughness:.3}),copperPipe=new THREE.MeshStandardMaterial({color:0x9b6338,metalness:.72,roughness:.34});
     createBoundaryPipeBatch([8,9],coldPipe,[2.62,2.92]);createBoundaryPipeBatch([2,3],copperPipe,[2.62,2.92]);
     const bracketGeometry=new THREE.BoxGeometry(.13,.58,.18),bracketMaterial=new THREE.MeshStandardMaterial({color:0x151d21,metalness:.7,roughness:.38}),brackets=[],dummy=new THREE.Object3D();
     [2,3,8,9].forEach(edgeIndex=>{const [a,b]=boundarySegments[edgeIndex],dx=b[0]-a[0],dz=b[1]-a[1],angle=-Math.atan2(dz,dx),inwardX=Math.sin(angle),inwardZ=Math.cos(angle);[.28,.72].forEach(t=>brackets.push({x:a[0]+dx*t+inwardX*(boundaryWall.thickness/2+.2),z:a[1]+dz*t+inwardZ*(boundaryWall.thickness/2+.2),angle}));});
-    const bracketBatch=new THREE.InstancedMesh(bracketGeometry,bracketMaterial,brackets.length);brackets.forEach((value,index)=>{dummy.position.set(value.x,2.77,value.z);dummy.rotation.set(0,value.angle,0);dummy.scale.set(1,1,1);dummy.updateMatrix();bracketBatch.setMatrixAt(index,dummy.matrix);});bracketBatch.instanceMatrix.needsUpdate=true;scene.add(bracketBatch);
+    const bracketBatch=new THREE.InstancedMesh(bracketGeometry,bracketMaterial,brackets.length);brackets.forEach((value,index)=>{dummy.position.set(value.x,2.77,value.z);dummy.rotation.set(0,value.angle,0);dummy.scale.set(1,1,1);dummy.updateMatrix();bracketBatch.setMatrixAt(index,dummy.matrix);});bracketBatch.instanceMatrix.needsUpdate=true;fitInstancedBounds(bracketBatch);scene.add(bracketBatch);
   }
   // 灯带中心向场内突出 3.5cm，并把厚度压到 3cm。它与墙体内表面之间保留明确深度差，
   // 即使玩家贴墙、斜视或浏览器深度缓冲精度较低，也不会出现共面 Z-fighting 闪烁。
@@ -1060,6 +1078,7 @@
   function registerSmoke(data){const now=performance.now(),existing=smokeVisualStates.get(data.id);if(existing){existing.x=data.x;existing.y=data.y;existing.z=data.z;existing.radius=data.radius||3.8;existing.expiresAt=Math.max(existing.expiresAt,now+(data.durationMs||data.remainingMs||0));return;}smokeVisualStates.set(data.id,{id:data.id,x:data.x,y:data.y,z:data.z,radius:data.radius||3.8,startedAt:now,expiresAt:now+(data.durationMs||data.remainingMs||12_000)});}
   function updateSmokes(items=[]){const seen=new Set();items.forEach(item=>{seen.add(item.id);registerSmoke({...item,durationMs:item.remainingMs})});for(const [smokeId] of smokeVisualStates)if(!seen.has(smokeId))smokeVisualStates.delete(smokeId);}
   function updateSmokeVisuals(time){let index=0,insideOpacity=0;for(const [id,smoke] of smokeVisualStates){if(time>=smoke.expiresAt){smokeVisualStates.delete(id);continue;}const age=Math.max(0,(time-smoke.startedAt)/1000),growth=Math.min(1,age/1.9),fade=Math.min(1,(smoke.expiresAt-time)/900),activeRadius=Math.max(.2,smoke.radius*growth),cameraDistance=Math.hypot(camera.position.x-smoke.x,camera.position.z-smoke.z);if(cameraDistance<activeRadius)insideOpacity=Math.max(insideOpacity,(.68+.3*(1-cameraDistance/activeRadius))*fade);const smokePuffs=qualityName==='low'?14:qualityName==='medium'?20:24;for(let puff=0;puff<smokePuffs&&index<MAX_SMOKE_PLANES;puff++){const angle=puff*2.399963+id*.37,layer=puff%6,radial=.04+.72*((puff%12)/11),spread=THREE.MathUtils.clamp(growth*1.42-radial*.32,0,1);if(spread<=.02)continue;const radius=smoke.radius*radial*growth,wave=Math.sin(time*.00012+puff*1.7+id)*.035;smokeDummy.position.set(smoke.x+Math.cos(angle)*radius,smoke.y+.48+layer*.32*spread+wave,smoke.z+Math.sin(angle)*radius);const size=(2.75+(puff%4)*.34)*(.25+.75*spread)*fade;smokeDummy.scale.set(size*1.34,size,1);smokeDummy.quaternion.copy(camera.quaternion);smokeDummy.rotateZ(angle*.19);smokeDummy.updateMatrix();smokeBatch.setMatrixAt(index++,smokeDummy.matrix);}}smokeBatch.count=index;smokeBatch.instanceMatrix.needsUpdate=true;const veil=$('smokeVeil'),next=insideOpacity.toFixed(3);if(veil.style.getPropertyValue('--smoke-opacity')!==next)veil.style.setProperty('--smoke-opacity',next);}
+  const _poseOffset=new THREE.Vector3(),_poseQuat=new THREE.Quaternion(),_poseEuler=new THREE.Euler();
   function poseGrenadeHands(asset,pull,drive){
     // AK/M4 的节点手臂具有更厚的袖管和独立手掌，不套用细手臂的骨骼卷曲值。
     // 右手负责投掷；左手只在拉环阶段短暂入镜，完成后立即退出视野。
@@ -1067,17 +1086,17 @@
       if(asset.leftUpper&&asset.leftBase){
         const reach=THREE.MathUtils.smoothstep(pull,.08,.72)*(1-THREE.MathUtils.smoothstep(pull,.78,1));
         asset.leftUpper.visible=reach>.015;
-        asset.leftUpper.position.copy(asset.leftBase.position).add(new THREE.Vector3(.18*reach,.48*reach,-.16*reach));
-        asset.leftUpper.quaternion.copy(asset.leftBase.quaternion).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-.12*reach,.18*reach,-.28*reach)));
+        asset.leftUpper.position.copy(asset.leftBase.position).add(_poseOffset.set(.18*reach,.48*reach,-.16*reach));
+        asset.leftUpper.quaternion.copy(asset.leftBase.quaternion).multiply(_poseQuat.setFromEuler(_poseEuler.set(-.12*reach,.18*reach,-.28*reach)));
       }
       return;
     }
-    const setBone=(name,values)=>{const bone=asset.arms?.getObjectByName(name),base=asset.poseBases?.[name];if(bone&&base)bone.quaternion.copy(base).multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(values[0],values[1],values[2])));};
+    const boneCache=asset.poseBoneCache||(asset.poseBoneCache={}),setBone=(name,x,y,z)=>{let bone=boneCache[name];if(bone===undefined)bone=boneCache[name]=asset.arms?.getObjectByName(name)||null;const base=asset.poseBases?.[name];if(bone&&base)bone.quaternion.copy(base).multiply(_poseQuat.setFromEuler(_poseEuler.set(x,y,z)));};
     const rightCurl=1.14+drive*.26,leftReach=.22+pull*.38;
     // Palms face each other for a believable grenade grip: right hand drives the throw,
     // left hand only reaches in to pull the pin. Thumbs stay rolled upward.
-    setBone('HandR001',[.14,-.08,-1.48-drive*.06]);setBone('IndexR001',[rightCurl,0,.16]);setBone('DoubleFingersR001',[rightCurl*.98,0,.12]);setBone('ThumbR001',[.52,0,-.22]);
-    setBone('HandL',[.08,.18,1.42+pull*.06]);setBone('IndexL',[leftReach,0,-.10]);setBone('DoubleFingersL',[leftReach*.92,0,-.06]);setBone('ThumbL',[.32+pull*.14,0,.28]);
+    setBone('HandR001',.14,-.08,-1.48-drive*.06);setBone('IndexR001',rightCurl,0,.16);setBone('DoubleFingersR001',rightCurl*.98,0,.12);setBone('ThumbR001',.52,0,-.22);
+    setBone('HandL',.08,.18,1.42+pull*.06);setBone('IndexL',leftReach,0,-.10);setBone('DoubleFingersL',leftReach*.92,0,-.06);setBone('ThumbL',.32+pull*.14,0,.28);
   }
   function updateGrenadeThrowView(action,progress,commitProgress){
     const serverThrowing=action==='THROWING_GRENADE',holding=throwableEquipped&&!serverThrowing,quickAiming=holding&&!CLASSIC_THROW_MODE&&grenadePriming,active=serverThrowing||holding;
@@ -1283,43 +1302,45 @@
     if(remoteMuzzle){remoteMuzzle.updateMatrixWorld(true);return remoteMuzzle.getWorldPosition(new THREE.Vector3());}
     return new THREE.Vector3(data.ox,data.oy,data.oz);
   }
+  const tracerPool=[],_tracerFrom=new THREE.Vector3(),_tracerTo=new THREE.Vector3();
+  function acquireTracer(){const pooled=tracerPool.pop();if(pooled)return pooled;const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));const line=new THREE.Line(geometry,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));line.frustumCulled=false;return {line,start:new THREE.Vector3(),end:new THREE.Vector3(),born:0,duration:0,segmentLength:1.35};}
   function tracer(data){
     const authorityStart=new THREE.Vector3(data.ox,data.oy,data.oz),direction=new THREE.Vector3(data.dx,data.dy,data.dz).normalize();
     const end=Array.isArray(data.hitPoint)?new THREE.Vector3().fromArray(data.hitPoint):authorityStart.clone().addScaledVector(direction,data.distance||45);
-    const start=tracerStart(data),positions=new Float32Array(6),geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
-    const line=new THREE.Line(geometry,new THREE.LineBasicMaterial({color:data.weapon==='ak47'?0xffd36a:0x78eaff,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
-    scene.add(line);visualTracers.push({line,start,end,born:performance.now(),duration:THREE.MathUtils.clamp(start.distanceTo(end)*1.2,34,80),segmentLength:1.35});
+    const start=tracerStart(data),record=acquireTracer();record.line.material.color.setHex(data.weapon==='ak47'?0xffd36a:0x78eaff);record.line.material.opacity=.9;record.start.copy(start);record.end.copy(end);record.born=performance.now();record.duration=THREE.MathUtils.clamp(start.distanceTo(end)*1.2,34,80);record.segmentLength=1.35;
+    scene.add(record.line);visualTracers.push(record);
     if(data.impact==='wall'){if(Array.isArray(data.hitPoint)&&Array.isArray(data.normal))placeBulletHole(end,new THREE.Vector3().fromArray(data.normal).normalize(),data.surface||'concrete');else createBulletHole(authorityStart,direction,data.distance||45);}
   }
   function updateVisualTracers(now){
     for(let index=visualTracers.length-1;index>=0;index--){
       const tracer=visualTracers[index],progress=(now-tracer.born)/tracer.duration;
-      if(progress>=1){scene.remove(tracer.line);tracer.line.geometry.dispose();tracer.line.material.dispose();visualTracers.splice(index,1);continue;}
+      if(progress>=1){scene.remove(tracer.line);if(tracerPool.length<64)tracerPool.push(tracer);else{tracer.line.geometry.dispose();tracer.line.material.dispose();}visualTracers[index]=visualTracers[visualTracers.length-1];visualTracers.pop();continue;}
       const distance=tracer.start.distanceTo(tracer.end),head=Math.min(1,progress+.18),tail=Math.max(0,head-tracer.segmentLength/Math.max(distance,.001));
-      const from=tracer.start.clone().lerp(tracer.end,tail),to=tracer.start.clone().lerp(tracer.end,head),array=tracer.line.geometry.attributes.position.array;
-      array.set([from.x,from.y,from.z,to.x,to.y,to.z]);tracer.line.geometry.attributes.position.needsUpdate=true;tracer.line.material.opacity=.9*(1-progress);
+      const from=_tracerFrom.copy(tracer.start).lerp(tracer.end,tail),to=_tracerTo.copy(tracer.start).lerp(tracer.end,head),array=tracer.line.geometry.attributes.position.array;
+      array[0]=from.x;array[1]=from.y;array[2]=from.z;array[3]=to.x;array[4]=to.y;array[5]=to.z;tracer.line.geometry.attributes.position.needsUpdate=true;tracer.line.material.opacity=.9*(1-progress);
     }
   }
   /** 旧协议没有权威命中点时才回退到客户端 Raycaster。 */
   function createBulletHole(start,direction,distance){const ray=new THREE.Raycaster(start,direction,0,Math.min(distance+.15,50)),hit=ray.intersectObjects(obstacleMeshes,false)[0];if(!hit||!hit.face)return;const normal=hit.face.normal.clone().transformDirection(hit.object.matrixWorld),surface=hit.object.userData.surfaceType||'concrete';placeBulletHole(hit.point,normal,surface);}
+  const bulletHoleAssets={};
   function placeBulletHole(point,normal,surface){
     // 使用不透明贴花进入 opaque 渲染队列，确保第一人称枪械最后绘制时能正确遮住弹痕。
     const style=surface==='metal'?{color:0x111827,size:.055,segments:8}:{color:0x181614,size:.085,segments:12};
-    const hole=new THREE.Mesh(new THREE.CircleGeometry(style.size,style.segments),new THREE.MeshBasicMaterial({color:style.color,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4}));hole.position.copy(point).addScaledVector(normal,.008);hole.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),normal);scene.add(hole);spawnImpactParticles(point,normal,surface);bulletHoles.push(hole);if(bulletHoles.length>100){const old=bulletHoles.shift();scene.remove(old);old.geometry.dispose();old.material.dispose();}setTimeout(()=>{const index=bulletHoles.indexOf(hole);if(index>=0){bulletHoles.splice(index,1);scene.remove(hole);hole.geometry.dispose();hole.material.dispose();}},12000);}
-  function spawnImpactParticles(point,normal,surface){const count=surface==='metal'?7:5,color=surface==='metal'?0xffc45a:0x9aa5b2;for(let i=0;i<count&&visualParticles.length<quality.particles;i++){const particle=new THREE.Mesh(new THREE.OctahedronGeometry(surface==='metal'?.018:.025,0),new THREE.MeshBasicMaterial({color}));particle.position.copy(point).addScaledVector(normal,.025);const tangent=new THREE.Vector3(Math.random()-.5,Math.random()*.7,Math.random()-.5),velocity=tangent.addScaledVector(normal,.8+Math.random()*1.5);scene.add(particle);visualParticles.push({object:particle,velocity,life:.22+Math.random()*.24,maxLife:.46,gravity:surface==='metal'?5:2});}}
+    const styleKey=surface==='metal'?'metal':'default';let holeAsset=bulletHoleAssets[styleKey];if(!holeAsset)holeAsset=bulletHoleAssets[styleKey]={geometry:new THREE.CircleGeometry(style.size,style.segments),material:new THREE.MeshBasicMaterial({color:style.color,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4})};const hole=new THREE.Mesh(holeAsset.geometry,holeAsset.material);hole.position.copy(point).addScaledVector(normal,.008);hole.quaternion.setFromUnitVectors(_fxUp,normal);scene.add(hole);spawnImpactParticles(point,normal,surface);bulletHoles.push(hole);if(bulletHoles.length>100){const old=bulletHoles.shift();scene.remove(old);}setTimeout(()=>{const index=bulletHoles.indexOf(hole);if(index>=0){bulletHoles.splice(index,1);scene.remove(hole);}},12000);}
+  function spawnImpactParticles(point,normal,surface){const count=surface==='metal'?7:5,color=surface==='metal'?0xffc45a:0x9aa5b2;for(let i=0;i<count&&visualParticles.length<quality.particles;i++){const metal=surface==='metal',particle=acquireFxMesh(metal?'impact-metal':'impact-concrete',()=>new THREE.OctahedronGeometry(metal?.018:.025,0),()=>new THREE.MeshBasicMaterial({color}));particle.position.copy(point).addScaledVector(normal,.025);_fxVelocity.set(Math.random()-.5,Math.random()*.7,Math.random()-.5).addScaledVector(normal,.8+Math.random()*1.5);scene.add(particle);pushFxParticle(particle,scene,.22+Math.random()*.24,.46,{velocity:_fxVelocity,gravity:metal?5:2});}}
   /** 弹壳属于第一人称表现层；服务端只关心这一发子弹是否有效，不同步装饰粒子。 */
   function spawnCasing(view){
     const port=view.userData.ejectionPort;if(!port||visualParticles.length>=quality.particles)return;
     const config=view.userData.assetConfig?.effects?.casing||{},base=config.baseVelocity||[.75,.55,.15],random=config.randomVelocity||[.45,.35,.25];
-    port.updateMatrixWorld(true);const origin=new THREE.Vector3();port.getWorldPosition(origin);
-    const radius=config.radius||.012,length=config.length||.055,casing=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,length,7),new THREE.MeshStandardMaterial({color:config.color||0xd6a741,metalness:.82,roughness:.28}));
+    port.updateMatrixWorld(true);const origin=port.getWorldPosition(_fxCasingOrigin);
+    const radius=config.radius||.012,length=config.length||.055,casingColor=config.color||0xd6a741,casing=acquireFxMesh(`casing-${radius}-${length}-${casingColor}`,()=>new THREE.CylinderGeometry(radius,radius,length,7),()=>new THREE.MeshStandardMaterial({color:casingColor,metalness:.82,roughness:.28}));
     casing.position.copy(origin);casing.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.PI/2);viewModelScene.add(casing);
-    visualParticles.push({object:casing,container:viewModelScene,life:.65,maxLife:.65,velocity:new THREE.Vector3(base[0]+Math.random()*random[0],base[1]+Math.random()*random[1],base[2]+Math.random()*random[2]),gravity:config.gravity||2.4,angularVelocity:new THREE.Vector3(12+Math.random()*8,8+Math.random()*7,10+Math.random()*8)});
+    pushFxParticle(casing,viewModelScene,.65,.65,{velocity:_fxVelocity.set(base[0]+Math.random()*random[0],base[1]+Math.random()*random[1],base[2]+Math.random()*random[2]),gravity:config.gravity||2.4,angular:_fxAngular.set(12+Math.random()*8,8+Math.random()*7,10+Math.random()*8)});
     if(libraryAudioBuffers['shells-ground.ogg']&&Math.random()<.72){const casingVolume=weaponAudioConfig().casingVolume??.3;setTimeout(()=>playLibrarySound('shells-ground.ogg',null,casingVolume),180+Math.random()*170);}
   }
   function updateVisualParticles(dt){for(let i=visualParticles.length-1;i>=0;i--){const particle=visualParticles[i],object=particle.object;particle.life-=dt;
     // 粒子是纯表现层；数据不完整时立即回收，绝不能让异常中断移动和重力所在的主循环。
-    if(particle.life<=0||!particle.velocity){(particle.container||scene).remove(object);object.geometry?.dispose();object.material?.dispose();visualParticles.splice(i,1);continue;}object.position.addScaledVector(particle.velocity,dt);if(particle.gravity)particle.velocity.y-=particle.gravity*dt;if(particle.angularVelocity){object.rotation.x+=particle.angularVelocity.x*dt;object.rotation.y+=particle.angularVelocity.y*dt;object.rotation.z+=particle.angularVelocity.z*dt;}const ratio=particle.life/particle.maxLife;if(particle.smoke){object.material.opacity=Math.max(0,ratio*.32);object.scale.multiplyScalar(1+dt*2.5);}else{if(particle.spark)object.material.opacity=Math.max(0,ratio);object.scale.setScalar(Math.max(.15,ratio));}}}
+    if(particle.life<=0||!particle.velocity){releaseFxMesh(object,particle.container||scene);visualParticles[i]=visualParticles[visualParticles.length-1];visualParticles.pop();continue;}object.position.addScaledVector(particle.velocity,dt);if(particle.gravity)particle.velocity.y-=particle.gravity*dt;if(particle.angularVelocity){object.rotation.x+=particle.angularVelocity.x*dt;object.rotation.y+=particle.angularVelocity.y*dt;object.rotation.z+=particle.angularVelocity.z*dt;}const ratio=particle.life/particle.maxLife;if(particle.smoke){object.material.opacity=Math.max(0,ratio*.32);object.scale.multiplyScalar(1+dt*2.5);}else{if(particle.spark)object.material.opacity=Math.max(0,ratio);object.scale.setScalar(Math.max(.15,ratio));}}}
   function reload(){if(throwableEquipped)return;if(!me||ammo===WEAPONS[weapon].mag||reserveAmmo===0||Date.now()<(me.reloadUntil||0)||localWeaponBusy())return;send({type:'reload'});}
   function setWeapon(next){if(!WEAPONS[next]||(weapon===next&&!throwableEquipped)||localWeaponBusy()||grenadePriming)return;if(!ownedWeapons.has(next)){chat(`地图中可以拾取 ${WEAPONS[next].name}`,true);return;}unequipThrowable();scope(false);send({type:'switch_weapon',weapon:next});if(libraryAudioBuffers['switch-weapon.ogg'])playLibrarySound('switch-weapon.ogg',camera.position,weaponAudioConfig(next).switchVolume??.85);spreadKick=0;}
   function scope(on){const isSniper=WEAPONS[weapon].category==='SNIPER_RIFLE';const next=!!on&&isSniper&&playing&&!dead&&!matchFinished&&!localWeaponBusy();if(next&&!scoped&&libraryAudioBuffers['sniper-scope-zoom-in.ogg'])playLibrarySound('sniper-scope-zoom-in.ogg',camera.position,weaponAudioConfig().scopeVolume??.78);if(next!==scoped)send({type:'scope',active:next});scoped=next;aimTarget=next?1:0;syncCrosshairVisibility();}
@@ -1502,23 +1523,45 @@
     clearTimeout(damageIndicatorTimer);damageIndicatorTimer=setTimeout(()=>indicator.classList.add('hidden'),720);
     canvas.classList.remove('damage');void canvas.offsetWidth;canvas.classList.add('damage');setTimeout(()=>canvas.classList.remove('damage'),360);
   }
+  /**
+   * 表现层对象池：弹道、命中碎屑、弹壳、爆炸火球都是高频短命对象。过去每次都 new 几何体和材质，
+   * 结束时 dispose，导致持续的 GC 与 GPU 上传，拖低 1% Low。现在几何体按形状共享，Mesh 连同
+   * 自己的材质回收复用；调用方每次取出后重新设置颜色、透明度和变换。
+   */
+  const sharedFxGeometries=new Map(),fxMeshPools=new Map(),FX_POOL_CAP=96;
+  function sharedFxGeometry(key,factory){let geometry=sharedFxGeometries.get(key);if(!geometry){geometry=factory();sharedFxGeometries.set(key,geometry);}return geometry;}
+  function acquireFxMesh(key,geometryFactory,materialFactory){const pool=fxMeshPools.get(key);let mesh=pool&&pool.pop();if(!mesh){mesh=new THREE.Mesh(sharedFxGeometry(key,geometryFactory),materialFactory());mesh.userData.fxPoolKey=key;mesh.userData.velocity=new THREE.Vector3();mesh.userData.angularVelocity=new THREE.Vector3();}mesh.position.set(0,0,0);mesh.rotation.set(0,0,0);mesh.scale.set(1,1,1);mesh.visible=true;return mesh;}
+  function releaseFxMesh(mesh,container){(container||mesh.parent)?.remove(mesh);const key=mesh.userData.fxPoolKey;if(!key){mesh.geometry?.dispose();mesh.material?.dispose();return;}let pool=fxMeshPools.get(key);if(!pool){pool=[];fxMeshPools.set(key,pool);}if(pool.length<FX_POOL_CAP)pool.push(mesh);else mesh.material?.dispose();}
+  const additiveFxMaterial=()=>new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1,depthWrite:false,blending:THREE.AdditiveBlending});
+  const transparentFxMaterial=()=>new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1});
+  const softFxMaterial=()=>new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1,depthWrite:false});
+  function pushFxParticle(mesh,container,life,maxLife,options){const velocity=mesh.userData.velocity;if(options.velocity)velocity.copy(options.velocity);else velocity.set(0,0,0);const record={object:mesh,container,velocity,life,maxLife,gravity:options.gravity||0,smoke:!!options.smoke,spark:!!options.spark,angularVelocity:null};if(options.angular){record.angularVelocity=mesh.userData.angularVelocity.copy(options.angular);}visualParticles.push(record);return record;}
+  const _fxCasingOrigin=new THREE.Vector3(),_fxVelocity=new THREE.Vector3(),_fxAngular=new THREE.Vector3(),_fxUp=new THREE.Vector3(0,0,1);
+  /**
+   * 爆炸灯光池：灯光数量变化会让所有受光材质重新编译着色器，造成投掷手雷后的明显卡顿。
+   * 这里在开局固定创建灯光、常驻场景，爆炸时只改位置、颜色和亮度，数量永不变化。
+   */
+  const EXPLOSION_LIGHT_POOL_SIZE=2,explosionLights=[];let explosionLightCursor=0;
+  for(let i=0;i<EXPLOSION_LIGHT_POOL_SIZE;i++){const light=new THREE.PointLight(0xffffff,0,13,2);light.userData.fadeStartedAt=0;light.userData.fadeDuration=0;light.userData.peak=0;scene.add(light);explosionLights.push(light);}
+  function flashExplosionLight(color,intensity,distance,x,y,z,durationMs){const light=explosionLights[explosionLightCursor];explosionLightCursor=(explosionLightCursor+1)%explosionLights.length;light.color.setHex(color);light.distance=distance;light.position.set(x,y,z);light.intensity=intensity;light.userData.peak=intensity;light.userData.fadeStartedAt=performance.now();light.userData.fadeDuration=durationMs;}
+  function updateExplosionLights(now){for(let i=0;i<explosionLights.length;i++){const light=explosionLights[i],data=light.userData;if(light.intensity<=0)continue;const t=(now-data.fadeStartedAt)/Math.max(1,data.fadeDuration);light.intensity=t>=1?0:data.peak*(1-t*t);}}
   function spawnGrenadeExplosion(data){
     const center=new THREE.Vector3(data.x,data.y,data.z);if(libraryAudioBuffers['grenade-explosion.ogg'])playLibrarySound('grenade-explosion.ogg',center,.9);else playGrenadeExplosionSound(center);
-    const core=new THREE.Mesh(new THREE.SphereGeometry(.62,12,9),new THREE.MeshBasicMaterial({color:0xfff2bd,transparent:true,opacity:.95,depthWrite:false,blending:THREE.AdditiveBlending}));core.position.copy(center);scene.add(core);visualParticles.push({object:core,velocity:new THREE.Vector3(),life:.2,maxLife:.2});
-    const fireball=new THREE.Mesh(new THREE.SphereGeometry(.95,12,9),new THREE.MeshBasicMaterial({color:0xff7d24,transparent:true,opacity:.5,depthWrite:false,blending:THREE.AdditiveBlending}));fireball.position.copy(center);scene.add(fireball);visualParticles.push({object:fireball,velocity:new THREE.Vector3(0,.15,0),life:.42,maxLife:.42,smoke:true});
-    const shockwave=new THREE.Mesh(new THREE.TorusGeometry(1.05,.065,6,24),new THREE.MeshBasicMaterial({color:0xffc267,transparent:true,opacity:.62,depthWrite:false,blending:THREE.AdditiveBlending}));shockwave.position.copy(center);shockwave.rotation.x=Math.PI/2;scene.add(shockwave);visualParticles.push({object:shockwave,velocity:new THREE.Vector3(),life:.48,maxLife:.48,smoke:true});
+    const core=acquireFxMesh('explosion-core',()=>new THREE.SphereGeometry(.62,12,9),additiveFxMaterial);core.material.color.setHex(0xfff2bd);core.material.opacity=.95;core.position.copy(center);scene.add(core);pushFxParticle(core,scene,.2,.2,{});
+    const fireball=acquireFxMesh('explosion-fireball',()=>new THREE.SphereGeometry(.95,12,9),additiveFxMaterial);fireball.material.color.setHex(0xff7d24);fireball.material.opacity=.5;fireball.position.copy(center);scene.add(fireball);pushFxParticle(fireball,scene,.42,.42,{velocity:_fxVelocity.set(0,.15,0),smoke:true});
+    const shockwave=acquireFxMesh('explosion-shockwave',()=>new THREE.TorusGeometry(1.05,.065,6,24),additiveFxMaterial);shockwave.material.color.setHex(0xffc267);shockwave.material.opacity=.62;shockwave.position.copy(center);shockwave.rotation.x=Math.PI/2;scene.add(shockwave);pushFxParticle(shockwave,scene,.48,.48,{smoke:true});
     const available=Math.max(0,quality.particles-visualParticles.length),sparkCount=Math.min(24,available);
-    for(let i=0;i<sparkCount;i++){const spark=new THREE.Mesh(new THREE.OctahedronGeometry(.045,0),new THREE.MeshBasicMaterial({color:i%3?0xff8d2d:0xffe6a3,transparent:true}));spark.position.copy(center);const velocity=new THREE.Vector3(Math.random()-.5,.16+Math.random()*.85,Math.random()-.5).normalize().multiplyScalar(4+Math.random()*7);scene.add(spark);visualParticles.push({object:spark,velocity,life:.45+Math.random()*.4,maxLife:.85,gravity:9,spark:true});}
-    for(let i=0;i<5&&visualParticles.length<quality.particles;i++){const smoke=new THREE.Mesh(new THREE.SphereGeometry(.22+Math.random()*.12,7,5),new THREE.MeshBasicMaterial({color:0x687077,transparent:true,opacity:.24,depthWrite:false}));smoke.position.copy(center).add(new THREE.Vector3((Math.random()-.5)*.45,Math.random()*.3,(Math.random()-.5)*.45));scene.add(smoke);visualParticles.push({object:smoke,velocity:new THREE.Vector3((Math.random()-.5)*.45,.55+Math.random()*.45,(Math.random()-.5)*.45),life:1.15+Math.random()*.45,maxLife:1.6,smoke:true});}
-    const light=new THREE.PointLight(0xff8d35,4.8,13,2);light.position.copy(center).add(new THREE.Vector3(0,.35,0));scene.add(light);setTimeout(()=>scene.remove(light),130);
+    for(let i=0;i<sparkCount;i++){const spark=acquireFxMesh('explosion-spark',()=>new THREE.OctahedronGeometry(.045,0),transparentFxMaterial);spark.material.color.setHex(i%3?0xff8d2d:0xffe6a3);spark.material.opacity=1;spark.position.copy(center);_fxVelocity.set(Math.random()-.5,.16+Math.random()*.85,Math.random()-.5).normalize().multiplyScalar(4+Math.random()*7);scene.add(spark);pushFxParticle(spark,scene,.45+Math.random()*.4,.85,{velocity:_fxVelocity,gravity:9,spark:true});}
+    for(let i=0;i<5&&visualParticles.length<quality.particles;i++){const smoke=acquireFxMesh('explosion-smoke',()=>new THREE.SphereGeometry(.22,7,5),softFxMaterial);smoke.material.color.setHex(0x687077);smoke.material.opacity=.24;smoke.scale.setScalar(1+Math.random()*.55);smoke.position.set(center.x+(Math.random()-.5)*.45,center.y+Math.random()*.3,center.z+(Math.random()-.5)*.45);scene.add(smoke);pushFxParticle(smoke,scene,1.15+Math.random()*.45,1.6,{velocity:_fxVelocity.set((Math.random()-.5)*.45,.55+Math.random()*.45,(Math.random()-.5)*.45),smoke:true});}
+    flashExplosionLight(0xff8d35,4.8,13,center.x,center.y+.35,center.z,130);
     const distance=camera.position.distanceTo(center);if(!spectating&&distance<14)recoilImpulse=Math.max(recoilImpulse,(1-distance/14)*.085);
     if(data.ownerId===id)for(const victim of(data.victims||[]))showDamage(victim.damage,false,'explosive');
   }
   function spawnFlashDetonation(data){
-    const center=new THREE.Vector3(data.x,data.y,data.z),core=new THREE.Mesh(new THREE.SphereGeometry(.32,10,7),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:1,depthWrite:false,blending:THREE.AdditiveBlending}));core.position.copy(center);scene.add(core);visualParticles.push({object:core,velocity:new THREE.Vector3(),life:.16,maxLife:.16});
+    const center=new THREE.Vector3(data.x,data.y,data.z),core=acquireFxMesh('flash-core',()=>new THREE.SphereGeometry(.32,10,7),additiveFxMaterial);core.material.color.setHex(0xffffff);core.material.opacity=1;core.position.copy(center);scene.add(core);pushFxParticle(core,scene,.16,.16,{});
     // A short, pale ground ring communicates the detonation point without implying damage.
-    const ring=new THREE.Mesh(new THREE.RingGeometry(1.3,1.55,32),new THREE.MeshBasicMaterial({color:0xd9f4ff,transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending}));ring.position.copy(center);ring.position.y+=.035;ring.rotation.x=-Math.PI/2;scene.add(ring);visualParticles.push({object:ring,velocity:new THREE.Vector3(),life:.32,maxLife:.32,smoke:true});
-    const light=new THREE.PointLight(0xeef8ff,7,16,2);light.position.copy(center);scene.add(light);setTimeout(()=>scene.remove(light),90);
+    const ring=acquireFxMesh('flash-ring',()=>new THREE.RingGeometry(1.3,1.55,32),()=>{const material=additiveFxMaterial();material.side=THREE.DoubleSide;return material;});ring.material.color.setHex(0xd9f4ff);ring.material.opacity=.38;ring.position.copy(center);ring.position.y+=.035;ring.rotation.x=-Math.PI/2;scene.add(ring);pushFxParticle(ring,scene,.32,.32,{smoke:true});
+    flashExplosionLight(0xeef8ff,7,16,center.x,center.y,center.z,90);
   }
   function applyFlashEffect(data){const intensity=THREE.MathUtils.clamp(Number(data.intensity)||0,0,1),duration=Math.max(260,Number(data.durationMs)||700),overlay=$('flashEffect');overlay.classList.remove('hidden','recovering');overlay.style.setProperty('--flash-opacity',String(.42+.58*intensity));overlay.style.setProperty('--flash-duration',`${duration}ms`);void overlay.offsetWidth;overlay.classList.add('active');setTimeout(()=>{overlay.classList.remove('active');overlay.classList.add('recovering');},90);setTimeout(()=>overlay.classList.add('hidden'),duration+120);const context=ensureAudio();if(!context||!sfxBus||!gunNoiseBuffer)return;const now=context.currentTime,master=context.createGain(),filter=context.createBiquadFilter(),noise=context.createBufferSource(),tone=context.createOscillator(),toneGain=context.createGain();master.gain.value=.22*intensity;filter.type='highpass';filter.frequency.value=2600;noise.buffer=gunNoiseBuffer;noise.loop=true;noise.connect(filter);filter.connect(master);tone.type='sine';tone.frequency.value=3400;toneGain.gain.setValueAtTime(.2*intensity,now);toneGain.gain.exponentialRampToValueAtTime(.001,now+Math.min(4,duration/1000));tone.connect(toneGain);toneGain.connect(master);master.connect(sfxBus);noise.start(now);tone.start(now);noise.stop(now+Math.min(3,duration/1000));tone.stop(now+Math.min(4,duration/1000));}
   function showShotResult(data){
@@ -1653,7 +1696,7 @@
   function animate(time){
     requestAnimationFrame(animate);const frameMs=time-previous,dt=Math.min(.05,frameMs/1000);previous=time;fpsFrames++;frameSamples.push(frameMs);if(frameSamples.length>600)frameSamples.shift();if(frameMs>42)longFrames++;
     if(time-fpsWindowStarted>=1000){measuredFps=Math.round(fpsFrames*1000/(time-fpsWindowStarted));const sorted=[...frameSamples].sort((a,b)=>a-b);p99FrameMs=sorted.length?sorted[Math.min(sorted.length-1,Math.floor(sorted.length*.99))]:0;onePercentLow=p99FrameMs?Math.round(1000/p99FrameMs):0;const struggling=time>=performanceGraceUntil&&(measuredFps<44||p99FrameMs>34||longFrames>=6);slowWindows=struggling?slowWindows+1:0;if(slowWindows>=3&&qualityName!=='low'){const next=qualityName==='high'?'medium':'low';applyQuality(next);chat(`Performance protection switched to ${next.toUpperCase()} quality.`,true);slowWindows=0;}$('devStats').innerHTML=`${serverStats}<br>FPS ${measuredFps} · 1%L ${onePercentLow} · P99 ${p99FrameMs.toFixed(1)}ms · DRAW ${renderer.info.render.calls}`;publishPerformanceSnapshot(longFrames);fpsFrames=0;longFrames=0;correctionCount=0;correctionDistance=0;fpsWindowStarted=time;}
-    tick(dt);if(firing&&time>=automaticFireAt)shoot();tryPickup();updateAim(dt);if(time>=nextHudAt){updateHud();updateMatchHud();nextHudAt=time+100;}updateBuffSelection();updateWeaponView(time,dt);updateVisualParticles(dt);updateVisualTracers(time);updateGrenadeVisuals(dt);updateSmokeVisuals(time);if(time>=nextVisibilityAt){mapVisualLoader?.updateVisibility(camera.position);nextVisibilityAt=time+180;}
+    tick(dt);if(firing&&time>=automaticFireAt)shoot();tryPickup();updateAim(dt);if(time>=nextHudAt){updateHud();updateMatchHud();nextHudAt=time+100;}updateBuffSelection();updateWeaponView(time,dt);updateVisualParticles(dt);updateVisualTracers(time);updateExplosionLights(performance.now());updateGrenadeVisuals(dt);updateSmokeVisuals(time);if(time>=nextVisibilityAt){mapVisualLoader?.updateVisibility(camera.position);nextVisibilityAt=time+180;}
     Object.values(pickupMeshes).forEach((mesh,index)=>{if(mesh.visible){mesh.rotation.y+=dt*(1.2+index*.1);mesh.position.y=(mesh.userData.hoverBaseY??1.1)+Math.sin(time*.002+index)*.15;}});const remoteBlend=1-Math.exp(-12*dt);remote.forEach((object,playerId)=>{
       if(object.userData.target)object.position.lerp(object.userData.target,remoteBlend);object.rotation.y+=(object.userData.yaw-object.rotation.y)*remoteBlend;
       const visual=object.userData.visualRoot,deathElapsed=object.userData.deathStartedAt?time-object.userData.deathStartedAt:Infinity,deathAnimating=!object.userData.wasAlive&&deathElapsed<850;
