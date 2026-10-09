@@ -151,3 +151,44 @@ weapons:
     falloffStart: 18
     falloffEnd: 55
     minimumDamageMultiplier: 0.58
+  knife:
+    uuid: 5b0f6a0e-3d2c-4a7e-9f1b-6c8e2d4a9b17
+    code: knife.combat
+    familyCode: knife
+    displayName: 军刀
+    category: MELEE
+    slot: MELEE
+    fireMode: SEMI_AUTO
+    reloadType: MAGAZINE
+    ammoType: none
+    # 近战不消耗弹药：弹匣恒为 1、备弹无限，只为复用统一的武器状态结构。
+    magazineSize: 1
+    reserveAmmo: -1
+    baseDamage: 40
+    headMultiplier: 1.0
+    armorPenetration: 0.35
+    movementMultiplier: 1.08
+    # 轻击间隔；服务端在收到攻击时立即按前方扇形结算。
+    fireIntervalMs: 420
+    cycleTimeMs: 0
+    retainScopeAfterShot: false
+    aimInMs: 1
+    equipMs: 220
+    reloadMs: 1
+    reloadCommitMs: 0
+    # 有效距离（米），从眼睛到目标身体表面。
+    maxRange: 2.0
+    hipSpread: 0
+    aimedSpread: 0
+    recoilKick: 0
+    bloomPerShot: 0
+    maxBloom: 0
+    verticalRecoil: 0
+    horizontalRecoil: 0
+    pitchRecovery: 10
+    yawRecovery: 10
+    heatRecovery: 10
+    viewKickScale: 0
+    falloffStart: 10
+    falloffEnd: 11
+    minimumDamageMultiplier: 1.0

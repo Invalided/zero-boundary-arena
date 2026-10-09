@@ -234,6 +234,7 @@ public class GameRoom {
     private void connect(GameConnection session) {
         sessions.put(session.id(), session);
         Player player = new Player(session.id(), weaponRegistry.require("m4a1"),mapRuntime.randomSpawn());
+        grantMelee(player);
         skinRegistry.defaultOwnedSkinIds().forEach(player::grantSkin);
         equipDefaultSkin(player,weaponRegistry.require("m4a1"));
         players.put(player.id, player);
@@ -578,6 +579,7 @@ public class GameRoom {
         }
         long cooldownRemaining = weapon.fireIntervalMs() - (now - shooter.lastShot);
         if (cooldownRemaining > 0) { rejectShot(shooter,shotId,"cooldown", cooldownRemaining); return; }
+        if (weapon.melee()) { meleeAttack(shooter, weapon, shotId, m, now); return; }
         if (shooter.ammo() <= 0) { rejectShot(shooter,shotId,"no_ammo", 0); return; }
         double aimYaw=m.path("aimYaw").asDouble(shooter.yaw),aimPitch=m.path("aimPitch").asDouble(shooter.pitch);
         if(!Double.isFinite(aimYaw)||!Double.isFinite(aimPitch)){rejectShot(shooter,shotId,"direction",0);return;}
@@ -659,37 +661,103 @@ public class GameRoom {
                 notifyBuffTriggered(hit,shooter,hit.spawnBuff,ShotOutcome.JAMMED);
                 return;
             }
-            DamageResolver.Result resolution=damageResolver.resolve(weapon,best,headshot,hit.hp,hit.armor);
-            int dealtDamage = resolution.dealtDamage();
-            hit.armor=resolution.remainingArmor();
-            hit.hp=resolution.remainingHealth();
-            result.put("target",hit.id).put("part",headshot?"head":"body").put("damage",dealtDamage);
-            ObjectNode damageTaken=json.createObjectNode().put("type","damage_taken")
-                .put("attackerId",shooter.id).put("attacker",shooter.name)
-                .put("weapon",weapon.id()).put("damage",dealtDamage)
-                .put("remainingHp",hit.hp).put("remainingArmor",hit.armor)
-                .put("distance",Math.round(best*10.0)/10.0)
-                .put("sourceYaw",sourceYaw(hit,shooter)).put("headshot",headshot)
-                .put("killed",hit.hp<=0);
-            send(sessions.get(hit.id),damageTaken);
-            if (hit.hp <= 0) {
-                hit.hp = 0;
-                hit.alive = false;
-                hit.respawnAvailableAt=now+RESPAWN_DELAY_MS;
-                if(matchController.scoringEnabled()){
-                    hit.deaths++;shooter.kills++;
-                    dropWeaponOnDeath(hit,now);
-                }
-                broadcast(json.createObjectNode().put("type", "kill")
-                    .put("killerId",shooter.id).put("killer", shooter.name)
-                    .put("victimId", hit.id).put("victim", hit.name)
-                    .put("weapon",weapon.id()).put("distance",Math.round(best*10.0)/10.0)
-                    .put("respawnDelayMs",RESPAWN_DELAY_MS)
-                    .put("headshot", headshot).put("counted",matchController.scoringEnabled()));
-            }
-            result.put("killed",hit.hp<=0);
+            applyWeaponHit(shooter,hit,weapon,best,headshot,now,result);
         }
         send(sessions.get(shooter.id),result);
+    }
+
+    /** 枪械与近战共用的伤害、受击通知和击杀结算，保证两种攻击的计分规则完全一致。 */
+    private void applyWeaponHit(Player shooter,Player hit,WeaponDefinition weapon,double best,boolean headshot,long now,ObjectNode result){
+        DamageResolver.Result resolution=damageResolver.resolve(weapon,best,headshot,hit.hp,hit.armor);
+        int dealtDamage = resolution.dealtDamage();
+        hit.armor=resolution.remainingArmor();
+        hit.hp=resolution.remainingHealth();
+        result.put("target",hit.id).put("part",headshot?"head":"body").put("damage",dealtDamage);
+        ObjectNode damageTaken=json.createObjectNode().put("type","damage_taken")
+            .put("attackerId",shooter.id).put("attacker",shooter.name)
+            .put("weapon",weapon.id()).put("damage",dealtDamage)
+            .put("remainingHp",hit.hp).put("remainingArmor",hit.armor)
+            .put("distance",Math.round(best*10.0)/10.0)
+            .put("sourceYaw",sourceYaw(hit,shooter)).put("headshot",headshot)
+            .put("killed",hit.hp<=0);
+        send(sessions.get(hit.id),damageTaken);
+        if (hit.hp <= 0) {
+            hit.hp = 0;
+            hit.alive = false;
+            hit.respawnAvailableAt=now+RESPAWN_DELAY_MS;
+            if(matchController.scoringEnabled()){
+                hit.deaths++;shooter.kills++;
+                dropWeaponOnDeath(hit,now);
+            }
+            broadcast(json.createObjectNode().put("type", "kill")
+                .put("killerId",shooter.id).put("killer", shooter.name)
+                .put("victimId", hit.id).put("victim", hit.name)
+                .put("weapon",weapon.id()).put("distance",Math.round(best*10.0)/10.0)
+                .put("respawnDelayMs",RESPAWN_DELAY_MS)
+                .put("headshot", headshot).put("counted",matchController.scoringEnabled()));
+        }
+        result.put("killed",hit.hp<=0);
+    }
+
+    static final double MELEE_BODY_RADIUS=.4;
+    static final double MELEE_HALF_ANGLE_COS=Math.cos(Math.toRadians(35));
+
+    /**
+     * 近战轻击：从眼睛出发，在前方 maxRange（加身体半径）内、水平约 70° 扇形中寻找最近的目标，
+     * 并要求挥砍高度落在目标身体范围内、两者之间没有墙体遮挡。贴身时放宽为整个正前方半球，
+     * 避免"刀已经捅进身体却判定没打到"。命中与否都广播挥刀事件，供其他玩家播放动作与音效。
+     */
+    private void meleeAttack(Player shooter,WeaponDefinition weapon,long shotId,JsonNode m,long now){
+        double aimYaw=m.path("aimYaw").asDouble(shooter.yaw),aimPitch=m.path("aimPitch").asDouble(shooter.pitch);
+        if(!Double.isFinite(aimYaw)||!Double.isFinite(aimPitch)){rejectShot(shooter,shotId,"direction",0);return;}
+        double expectedCos=Math.cos(shooter.pitch),aimCos=Math.cos(aimPitch);
+        double directionDot=(-Math.sin(aimYaw)*aimCos)*(-Math.sin(shooter.yaw)*expectedCos)+Math.sin(aimPitch)*Math.sin(shooter.pitch)+(-Math.cos(aimYaw)*aimCos)*(-Math.cos(shooter.yaw)*expectedCos);
+        if(directionDot<.94){rejectShot(shooter,shotId,"direction",0);return;}
+        shooter.lastShot=now;shooter.scoped=false;shooter.scopedAt=0;
+        double ox=shooter.x,oy=shooter.y,oz=shooter.z,fx=-Math.sin(aimYaw),fz=-Math.cos(aimYaw);
+        double reach=weapon.maxRange()+MELEE_BODY_RADIUS,slope=Math.tan(Math.max(-1.3,Math.min(1.3,aimPitch)));
+        Player hit=null;double best=Double.MAX_VALUE;
+        for(Player target:players.values()){
+            if(target==shooter||!target.joined||target.spectator||!target.alive||now<target.invulnerableUntil)continue;
+            double hx=target.x-ox,hz=target.z-oz,horizontal=Math.hypot(hx,hz);
+            if(horizontal>reach)continue;
+            double facing=horizontal<1e-4?1:(hx*fx+hz*fz)/horizontal;
+            if(facing<(horizontal<.6?0:MELEE_HALF_ANGLE_COS))continue;
+            // 挥砍在目标水平距离处的高度必须落在身体（脚到头顶）附近。
+            double swingY=oy+slope*horizontal,feet=target.y-MapRuntime.EYE_HEIGHT,head=target.y+.15;
+            if(swingY<feet-.35||swingY>head+.35)continue;
+            double cy=Math.max(feet+.3,Math.min(head-.1,swingY)),dy=cy-oy,distance=Math.sqrt(horizontal*horizontal+dy*dy);
+            if(distance>1e-4){
+                MapRuntime.RayHit wall=mapRuntime.firstObstacleHit(ox,oy,oz,hx/distance,dy/distance,hz/distance,distance);
+                if(wall.distance()<distance-.05)continue;
+            }
+            if(distance<best){best=distance;hit=target;}
+        }
+        ObjectNode swing=json.createObjectNode().put("type","melee_swing").put("id",shooter.id).put("weapon",weapon.id()).put("hit",hit!=null);
+        broadcast(swing);
+        ObjectNode result=json.createObjectNode().put("type","shot_result").put("shotId",shotId).put("weapon",weapon.id())
+            .put("serverTick",tickCount).put("melee",true).put("directionDot",directionDot);
+        if(hit==null){
+            double pc=Math.cos(aimPitch),dx=fx*pc,dy=Math.sin(aimPitch),dz=fz*pc;
+            MapRuntime.RayHit wall=mapRuntime.firstObstacleHit(ox,oy,oz,dx,dy,dz,weapon.maxRange());
+            boolean blocked=wall.distance()<weapon.maxRange();
+            result.put("outcome",blocked?ShotOutcome.BLOCKED.name():ShotOutcome.MISS.name()).put("impact",blocked?"wall":"none");
+            if(blocked){
+                result.put("surface",wall.surface());
+                result.putArray("hitPoint").add(wall.point().x()).add(wall.point().y()).add(wall.point().z());
+                result.putArray("normal").add(wall.normal().x()).add(wall.normal().y()).add(wall.normal().z());
+            }
+            send(sessions.get(shooter.id),result);
+            return;
+        }
+        result.put("outcome",ShotOutcome.HIT.name()).put("impact","player");
+        applyWeaponHit(shooter,hit,weapon,best,false,now,result);
+        send(sessions.get(shooter.id),result);
+    }
+
+    /** 每名玩家出生自带一把近战武器，放在 MELEE 槽位，不改变当前手持武器。 */
+    private void grantMelee(Player player){
+        if(weaponRegistry.contains("knife"))player.addWeapon(weaponRegistry.require("knife"));
     }
 
     private void notifyBuffTriggered(Player owner,Player attacker,SpawnBuff buff,ShotOutcome outcome){
@@ -1134,7 +1202,7 @@ public class GameRoom {
         for(Player player:players.values()){
             if(!player.joined||player.spectator)continue;
             player.kills=0;player.deaths=0;
-            player.resetLoadout(starter);equipDefaultSkin(player,starter);
+            player.resetLoadout(starter);grantMelee(player);equipDefaultSkin(player,starter);
             // Humans move first so every bot safety score sees the final round-opening positions.
             if(!preserveJoinPosition&&!player.bot)player.respawn(mapRuntime.randomSpawn(),true);
         }
@@ -1158,7 +1226,7 @@ public class GameRoom {
             if(!player.joined||player.spectator)continue;
             selections.put(player,player.spawnBuffSelected?player.spawnBuff:SpawnBuff.NONE);
             player.kills=0;player.deaths=0;
-            player.resetLoadout(starter);equipDefaultSkin(player,starter);
+            player.resetLoadout(starter);grantMelee(player);equipDefaultSkin(player,starter);
         }
         // Warmup remains fully playable, but combat never inherits a rushed or spawn-camped
         // position. Humans are placed first so bot safety scoring sees final player locations.

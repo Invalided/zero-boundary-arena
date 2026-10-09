@@ -898,6 +898,7 @@
     else if (data.type === 'skin_rejected') showWeaponState('该武器外观不可用');
     else if (data.type === 'shot_rejected') {lastResolvedShotId=Math.max(lastResolvedShotId,data.shotId||0);if(data.reason!=='cooldown')showWeaponState(data.reason==='buff_jammed'?`出生增益：武器卡顿 ${(data.remainingMs/1000).toFixed(1)}s`:data.reason==='cycling'?`拉栓中 ${(data.remainingMs/1000).toFixed(1)}s`:data.reason==='throwing_grenade'?'投掷手雷中':data.reason==='equipping'?'切枪中':data.reason==='reloading'?'换弹中':data.reason==='direction'?'视角尚未同步':data.reason==='replay'?'射击序号无效':'弹匣为空');}
     else if (data.type === 'shot') {tracer(data);playGunSound(data.weapon,new THREE.Vector3(data.ox,data.oy,data.oz));}
+    else if (data.type === 'melee_swing') {if(data.id!==id){const source=remote.get(data.id);playMeleeWhoosh(source?source.position:null,.3);}}
     else if (data.type === 'shot_result') showShotResult(data);
     else if (data.type === 'buff_triggered') showBuffTriggered(data);
     else if (data.type === 'bot_configured') {appSettings.training.botDifficulty=data.difficulty;saveSettings();syncSettingsUI();showWeaponState(`机器人难度：${{OFF:'关闭',EASY:'简单',HARD:'困难',INFERNO:'炼狱'}[data.difficulty]||data.difficulty}`);}
@@ -1027,7 +1028,7 @@
     weapon = player.weapon || 'm4a1'; ammo = player.ammo ?? ammo;reserveAmmo=player.reserveAmmo??reserveAmmo;throwableInventory={...throwableInventory,...(player.throwables||{})};if(!throwableEquipped&&player.selectedThrowable)selectedThrowable=player.selectedThrowable;
     const previousSkins=equippedSkins;equippedSkins={...(player.equippedSkins||{})};equippedSlots={...(player.equippedSlots||{})};weaponInventory=Object.fromEntries((player.weaponStates||[]).map(state=>[state.id,state]));for(const weaponId of new Set([...Object.keys(previousSkins),...Object.keys(equippedSkins)]))if(previousSkins[weaponId]!==equippedSkins[weaponId])applyViewSkin(weaponId,equippedSkins[weaponId]);
     ownedWeapons = new Set(player.weapons || ['m4a1']);
-    $('weaponName').textContent = WEAPONS[weapon].name; $('ammo').textContent = ammo;$('reserveAmmo').textContent=reserveAmmo<0?'∞':reserveAmmo;renderLoadout(player);
+    $('weaponName').textContent = WEAPONS[weapon].name; const meleeHud=WEAPONS[weapon]?.category==='MELEE';$('ammo').textContent = meleeHud?'—':ammo;$('reserveAmmo').textContent=meleeHud?'—':(reserveAmmo<0?'∞':reserveAmmo);renderLoadout(player);
     syncCrosshairVisibility(); updateHud();
     const now=Date.now(),localThrowInFlight=localGrenadeThrowStartedAt>0&&now<localGrenadeThrowStartedAt+THROW_DURATION_MS*.98,serverThrowWithoutPrediction=player.weaponAction==='THROWING_GRENADE'&&!localGrenadeThrowStartedAt;
     Object.entries(weaponViews).forEach(([id,view])=>view.visible=id===weapon&&!throwableEquipped&&!localThrowInFlight&&!serverThrowWithoutPrediction);
@@ -1079,6 +1080,70 @@
   function updateSmokes(items=[]){const seen=new Set();items.forEach(item=>{seen.add(item.id);registerSmoke({...item,durationMs:item.remainingMs})});for(const [smokeId] of smokeVisualStates)if(!seen.has(smokeId))smokeVisualStates.delete(smokeId);}
   function updateSmokeVisuals(time){let index=0,insideOpacity=0;for(const [id,smoke] of smokeVisualStates){if(time>=smoke.expiresAt){smokeVisualStates.delete(id);continue;}const age=Math.max(0,(time-smoke.startedAt)/1000),growth=Math.min(1,age/1.9),fade=Math.min(1,(smoke.expiresAt-time)/900),activeRadius=Math.max(.2,smoke.radius*growth),cameraDistance=Math.hypot(camera.position.x-smoke.x,camera.position.z-smoke.z);if(cameraDistance<activeRadius)insideOpacity=Math.max(insideOpacity,(.68+.3*(1-cameraDistance/activeRadius))*fade);const smokePuffs=qualityName==='low'?14:qualityName==='medium'?20:24;for(let puff=0;puff<smokePuffs&&index<MAX_SMOKE_PLANES;puff++){const angle=puff*2.399963+id*.37,layer=puff%6,radial=.04+.72*((puff%12)/11),spread=THREE.MathUtils.clamp(growth*1.42-radial*.32,0,1);if(spread<=.02)continue;const radius=smoke.radius*radial*growth,wave=Math.sin(time*.00012+puff*1.7+id)*.035;smokeDummy.position.set(smoke.x+Math.cos(angle)*radius,smoke.y+.48+layer*.32*spread+wave,smoke.z+Math.sin(angle)*radius);const size=(2.75+(puff%4)*.34)*(.25+.75*spread)*fade;smokeDummy.scale.set(size*1.34,size,1);smokeDummy.quaternion.copy(camera.quaternion);smokeDummy.rotateZ(angle*.19);smokeDummy.updateMatrix();smokeBatch.setMatrixAt(index++,smokeDummy.matrix);}}smokeBatch.count=index;smokeBatch.instanceMatrix.needsUpdate=true;const veil=$('smokeVeil'),next=insideOpacity.toFixed(3);if(veil.style.getPropertyValue('--smoke-opacity')!==next)veil.style.setProperty('--smoke-opacity',next);}
   const _poseOffset=new THREE.Vector3(),_poseQuat=new THREE.Quaternion(),_poseEuler=new THREE.Euler();
+  /**
+   * 军刀第一人称：复用投掷物那套已校准的右臂，把手雷换成一把程序化建模的军刀。
+   * 刀柄中心放在手雷原本的握持点，刀身朝前上方；挥刀动作只驱动整个视图节点，
+   * 不改手臂骨骼，因此不会破坏手雷的校准。外观只是表现，命中完全由服务端判定。
+   */
+  const KNIFE_SWING_MS=360,KNIFE_STRIKE_START=.2,KNIFE_STRIKE_END=.55;
+  let knifeSwingStartedAt=0,knifeModeActive=false;
+  const knifeView=createKnifeModel();knifeView.visible=false;grenadeThrowView.add(knifeView);
+  function createKnifeModel(){
+    const group=new THREE.Group(),steel=new THREE.MeshStandardMaterial({color:0xb9c1c6,metalness:.86,roughness:.28}),dark=new THREE.MeshStandardMaterial({color:0x1d2226,metalness:.25,roughness:.72}),guardMaterial=new THREE.MeshStandardMaterial({color:0x3a4045,metalness:.7,roughness:.4});
+    const handle=new THREE.Mesh(new THREE.CylinderGeometry(.0135,.015,.1,8),dark);handle.position.y=0;
+    for(let i=0;i<4;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(.0148,.0022,4,10),dark);ring.rotation.x=Math.PI/2;ring.position.y=-.035+i*.023;group.add(ring);}
+    const pommel=new THREE.Mesh(new THREE.CylinderGeometry(.017,.015,.014,8),guardMaterial);pommel.position.y=-.057;
+    const guard=new THREE.Mesh(new THREE.BoxGeometry(.068,.011,.02),guardMaterial);guard.position.y=.055;
+    const shape=new THREE.Shape();shape.moveTo(-.015,0);shape.lineTo(.016,0);shape.lineTo(.016,.13);shape.quadraticCurveTo(.012,.17,0,.19);shape.lineTo(-.006,.165);shape.lineTo(-.015,.14);shape.lineTo(-.015,0);
+    const bladeGeometry=new THREE.ExtrudeGeometry(shape,{depth:.0045,bevelEnabled:true,bevelThickness:.0018,bevelSize:.0018,bevelSegments:1,curveSegments:6});bladeGeometry.translate(0,0,-.00225);
+    const blade=new THREE.Mesh(bladeGeometry,steel);blade.position.y=.06;
+    group.add(handle,pommel,guard,blade);group.traverse(object=>{if(object.isMesh){object.castShadow=false;object.receiveShadow=false;}});group.scale.setScalar(.9);return group;
+  }
+  /** 刀身方向在相机空间中定义（前上方、略向左），再换算到手臂视图节点的本地空间。 */
+  function placeKnifeInHand(){
+    const asset=grenadeThrowView.userData.asset,baseQuaternion=new THREE.Quaternion().setFromEuler(new THREE.Euler().fromArray(grenadeViewLayout.viewRotation||[0,0,0]));
+    const up=new THREE.Vector3(-.05,.45,-.9).normalize(),side=new THREE.Vector3(.6,0,.8);side.addScaledVector(up,-side.dot(up)).normalize();const across=new THREE.Vector3().crossVectors(up,side);
+    const cameraQuaternion=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(across,up,side));
+    knifeView.quaternion.copy(baseQuaternion.clone().invert().multiply(cameraQuaternion));
+    // 以破片手雷的校准握点为准，临时激活它来读取位置，退出持刀时再恢复当前投掷物。
+    if(asset?.models?.frag_grenade)activateThrowableAsset('frag_grenade');
+    const holdModel=asset?.models?.frag_grenade?.root||asset?.model;
+    if(holdModel){grenadeThrowView.updateMatrixWorld(true);const center=new THREE.Box3().setFromObject(holdModel).getCenter(new THREE.Vector3());grenadeThrowView.worldToLocal(center);knifeView.position.copy(center);knifeView.userData.placed=true;}
+    else{const fallback=grenadeThrowView.userData.grenade;knifeView.position.copy(fallback.position).add(new THREE.Vector3(0,-.02,0));knifeView.userData.placed=false;}
+  }
+  function exitKnifeMode(){if(!knifeModeActive)return;knifeModeActive=false;knifeView.visible=false;knifeSwingStartedAt=0;activateThrowableAsset(selectedThrowable);const fallback=grenadeThrowView.userData;if(fallback.grenade)fallback.grenade.visible=true;if(fallback.ring)fallback.ring.visible=true;}
+  function updateKnifeView(){
+    const asset=grenadeThrowView.userData.asset,layoutPosition=grenadeViewLayout.viewPosition,layoutRotation=grenadeViewLayout.viewRotation;
+    grenadeThrowView.visible=true;grenadeThrowView.position.fromArray(layoutPosition);grenadeThrowView.rotation.fromArray(layoutRotation);
+    if(asset){
+      asset.root.position.set(0,0,0);asset.root.rotation.fromArray(grenadeViewLayout.axisRotation);
+      if(asset.rightUpper){asset.rightUpper.visible=true;if(asset.rightBase){asset.rightUpper.position.copy(asset.rightBase.position);asset.rightUpper.quaternion.copy(asset.rightBase.quaternion).multiply(_poseQuat.setFromEuler(_poseEuler.set(0,0,.18)));}}
+      if(asset.leftUpper)asset.leftUpper.visible=false;
+      if(asset.armRig!=='ANIMATED_SKINNED')poseGrenadeHands(asset,0,0);
+    }
+    if(!knifeModeActive||(asset&&!knifeView.userData.placed)){knifeModeActive=true;placeKnifeInHand();}
+    // 每帧都隐藏手雷模型：切换投掷物种类等操作可能把它重新设为可见。
+    if(asset)Object.values(asset.models||{}).forEach(value=>value.root.visible=false);
+    const fallbackParts=grenadeThrowView.userData;if(fallbackParts.grenade)fallbackParts.grenade.visible=false;if(fallbackParts.ring)fallbackParts.ring.visible=false;if(fallbackParts.leftArm)fallbackParts.leftArm.visible=false;
+    knifeView.visible=true;
+    const elapsed=knifeSwingStartedAt?performance.now()-knifeSwingStartedAt:Infinity;if(elapsed>=KNIFE_SWING_MS){knifeSwingStartedAt=0;return;}
+    // 轻击：先向右上蓄力，再斜向左下划过准星，最后回到持刀姿势。
+    const t=elapsed/KNIFE_SWING_MS,smooth=value=>{const x=THREE.MathUtils.clamp(value,0,1);return x*x*(3-2*x);};
+    const windup=smooth(t/KNIFE_STRIKE_START),strike=smooth((t-KNIFE_STRIKE_START)/(KNIFE_STRIKE_END-KNIFE_STRIKE_START)),recover=smooth((t-KNIFE_STRIKE_END)/(1-KNIFE_STRIKE_END)),hold=1-recover;
+    const px=(.05*windup+(-.21)*strike)*hold,py=(.045*windup+(-.1)*strike)*hold,pz=(.02*windup+(-.1)*strike)*hold;
+    const ry=(.28*windup+(-.85)*strike)*hold,rz=(-.3*windup+.75*strike)*hold,rx=(.08*windup+(-.32)*strike)*hold;
+    grenadeThrowView.position.x+=px;grenadeThrowView.position.y+=py;grenadeThrowView.position.z+=pz;grenadeThrowView.rotation.x+=rx;grenadeThrowView.rotation.y+=ry;grenadeThrowView.rotation.z+=rz;
+  }
+  function playMeleeWhoosh(position,volume=.26){const context=ensureAudio();if(!context||!sfxBus||!gunNoiseBuffer)return;if(context.state==='suspended')context.resume();const now=context.currentTime,distance=position?position.distanceTo(camera.position):0,gain=context.createGain(),filter=context.createBiquadFilter(),noise=context.createBufferSource();filter.type='bandpass';filter.Q.value=1.4;filter.frequency.setValueAtTime(2400,now);filter.frequency.exponentialRampToValueAtTime(520,now+.2);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume/(1+distance*.25)),now+.05);gain.gain.exponentialRampToValueAtTime(.0001,now+.22);noise.buffer=gunNoiseBuffer;noise.playbackRate.value=.55;noise.connect(filter);filter.connect(gain);gain.connect(sfxBus);noise.start(now);noise.stop(now+.24);}
+  function playMeleeImpact(surface){const context=ensureAudio();if(!context||!sfxBus)return;if(context.state==='suspended')context.resume();const now=context.currentTime,osc=context.createOscillator(),gain=context.createGain();osc.type=surface==='metal'?'square':'triangle';osc.frequency.setValueAtTime(surface==='metal'?1900:620,now);osc.frequency.exponentialRampToValueAtTime(surface==='metal'?900:180,now+.09);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.09,now+.006);gain.gain.exponentialRampToValueAtTime(.0001,now+.12);osc.connect(gain);gain.connect(sfxBus);osc.start(now);osc.stop(now+.13);}
+  function meleeAttack(){
+    const config=WEAPONS[weapon],now=Date.now(),lastShot=lastLocalShotByWeapon.get(weapon)||0;
+    if(!playing||dead||spectating||matchFinished||(currentMatch.phase!=='WARMUP'&&currentMatch.phase!=='PLAYING')||localWeaponBusy())return false;
+    if(now-lastShot<(config.cooldown||420))return false;lastLocalShotByWeapon.set(weapon,now);
+    knifeSwingStartedAt=performance.now();playMeleeWhoosh(null);
+    send({type:'shoot',shotId:++shotSequence,aimYaw:state.yaw,aimPitch:THREE.MathUtils.clamp(state.pitch,-1.45,1.45)});
+    return true;
+  }
   function poseGrenadeHands(asset,pull,drive){
     // AK/M4 的节点手臂具有更厚的袖管和独立手掌，不套用细手臂的骨骼卷曲值。
     // 右手负责投掷；左手只在拉环阶段短暂入镜，完成后立即退出视野。
@@ -1267,6 +1332,7 @@
   function releaseGrenadePrime(){if(!grenadePriming)return;grenadePriming=false;syncCrosshairVisibility();throwGrenade();}
   function shoot() {
     if(throwableEquipped){startGrenadePrime();return false;}
+    if(WEAPONS[weapon]?.category==='MELEE')return meleeAttack();
     const config=WEAPONS[weapon],now=Date.now(),lastShot=lastLocalShotByWeapon.get(weapon)||0,remaining=config.cooldown-(now-lastShot);if(!playing||dead||spectating||matchFinished||(currentMatch.phase!=='WARMUP'&&currentMatch.phase!=='PLAYING')||ammo<=0||now<(me?.reloadUntil||0)||localWeaponBusy())return false;if(remaining>0){if(config.category==='SNIPER_RIFLE')showWeaponState(`拉栓中 ${(remaining/1000).toFixed(1)}s`);return false;}lastLocalShotByWeapon.set(weapon,now);
     const heat=weaponHeat.get(weapon)||0,moving=keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD;
     // 浏览器只提交开火瞬间的瞄准意图。最终圆盘散布、移动惩罚和实际射线方向由
@@ -1484,7 +1550,7 @@
 
   /** 根据服务端动作时间轴驱动占位模型；换成 GLB 后只需把进度映射到 AnimationAction。 */
   function updateWeaponView(time,dt){
-    if(spectating){Object.values(weaponViews).forEach(view=>view.visible=false);grenadeThrowView.visible=false;camera.fov=75;camera.updateProjectionMatrix();return;}
+    if(spectating){Object.values(weaponViews).forEach(view=>view.visible=false);exitKnifeMode();grenadeThrowView.visible=false;camera.fov=75;camera.updateProjectionMatrix();return;}
     const config=WEAPONS[weapon];if(!config)return;
     const aimStep=dt*1000/Math.max(1,config.aimIn||1);aimProgress+=Math.sign(aimTarget-aimProgress)*Math.min(Math.abs(aimTarget-aimProgress),aimStep);
     const eased=aimProgress*aimProgress*(3-2*aimProgress),nextFov=75+(25-75)*eased;if(Math.abs(camera.fov-nextFov)>.001){camera.fov=nextFov;camera.updateProjectionMatrix();viewModelCamera.fov=nextFov;viewModelCamera.updateProjectionMatrix();}$('scope').style.setProperty('--scope-progress',aimProgress.toFixed(3));$('scope').classList.toggle('hidden',aimProgress<.88);
@@ -1497,6 +1563,8 @@
     const action=predictedThrow?'THROWING_GRENADE':serverAction,start=predictedThrow?localGrenadeThrowStartedAt:(me?.weaponActionStartedAt||0),end=predictedThrow?localGrenadeThrowStartedAt+THROW_DURATION_MS:(me?.weaponActionUntil||0),commit=predictedThrow?localGrenadeThrowStartedAt+THROW_COMMIT_MS:(me?.weaponActionCommitAt||0),progress=end>start?Math.max(0,Math.min(1,(now-start)/(end-start))):1,commitProgress=end>start&&commit>start?(commit-start)/(end-start):.78,throwing=action==='THROWING_GRENADE';
     if(localGrenadeThrowStartedAt&&serverAction!=='THROWING_GRENADE'&&now>=localGrenadeThrowStartedAt+THROW_DURATION_MS)localGrenadeThrowStartedAt=0;
     Object.entries(weaponViews).forEach(([id,view])=>{view.visible=id===weapon&&!throwableEquipped&&!(config.category==='SNIPER_RIFLE'&&aimProgress>.82)&&(!throwing||progress>=.98);});
+    if(config.category==='MELEE'){if(throwableEquipped||throwing){exitKnifeMode();updateGrenadeThrowView(action,progress,commitProgress);}else updateKnifeView();lastWeaponAction=action;return;}
+    exitKnifeMode();
     const view=weaponViews[weapon];if(!view)return;syncAssetAction(view,action,progress);syncMuzzleAttachment(view);updateGrenadeThrowView(action,progress,commitProgress);const actionHint=$('weaponActionHint'),cycling=action==='CYCLING';actionHint.classList.toggle('hidden',!cycling);if(cycling){actionHint.style.setProperty('--action-progress',Math.round(progress*100)+'%');}if(action==='CYCLING'&&lastWeaponAction!=='CYCLING'&&weapon!=='sniper')playBoltSound(weapon);if(throwing&&lastWeaponAction!=='THROWING_GRENADE'&&!localGrenadeThrowStartedAt)playGrenadePinSound();lastWeaponAction=action;
     // ViewModel motion is visual only. Per-asset coefficients prevent differently
     // scaled source models from turning the same world-space offset into a huge arc.
@@ -1567,6 +1635,7 @@
   function showShotResult(data){
     const shotId=Number(data.shotId)||0;if(shotId&&shotId<=lastResolvedShotId)return;lastResolvedShotId=Math.max(lastResolvedShotId,shotId);
     if(data.outcome!=='HIT')console.debug('[shot-result]',data);
+    if(data.melee&&data.outcome==='BLOCKED'&&Array.isArray(data.hitPoint)&&Array.isArray(data.normal)){const point=new THREE.Vector3().fromArray(data.hitPoint),normal=new THREE.Vector3().fromArray(data.normal).normalize();spawnImpactParticles(point,normal,data.surface||'concrete');playMeleeImpact(data.surface);}
     if(data.outcome==='HIT')showConfirmedHit(data);
     else if(data.outcome==='NEGATED')showWeaponState('攻击被防御效果抵消');
     else if(data.outcome==='DEFLECTED'&&!data.buff)showWeaponState('弹道受到干扰');
